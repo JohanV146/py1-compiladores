@@ -22,6 +22,9 @@ import java_cup.runtime.*;
   private Symbol symbol(int type, Object value) {
     return new Symbol(type, yyline, yycolumn, value);
   }
+  private Symbol symbol(int type, int yyline, int yycolumn, String value) {
+      return new Symbol(type, yyline, yycolumn, value);
+  }
 %}
 
 LineTerminator = \r|\n|\r\n
@@ -37,7 +40,7 @@ EndOfLineComment     = "//" {InputCharacter}* {LineTerminator}?
 DocumentationComment = "/**" {CommentContent} "*"+ "/"
 CommentContent       = ( [^*] | \*+ [^/*] )*
 
-Identifier = [:jletter:] [:jletterdigit:]*
+Identifier = [a-zA-Z]([a-zA-Z0-9])* 
 
 DecIntegerLiteral = 0 | [1-9][0-9]*
 /*================================Lexemas propios================================*/
@@ -51,77 +54,77 @@ charc = [a-zA-Z]
 
 /* keywords */
 <YYINITIAL> {WhiteSpace}         { /* ignore */ }
-<YYINITIAL> "+"                  { return symbol(sym.PLUS); }
-<YYINITIAL> "abstract"           { return symbol(sym.ABSTRACT); }
-<YYINITIAL> "boolean"            { return symbol(sym.BOOLEAN); }
-<YYINITIAL> "break"              { return symbol(sym.BREAK); }
-<YYINITIAL> "*"                  { return symbol(sym.TIMES); }
+<YYINITIAL> "+"                  { return symbol(sym.PLUS, yyline, yycolumn, yytext()); }
+<YYINITIAL> "abstract"           { return symbol(sym.ABSTRACT, yyline, yycolumn, yytext()); }
+<YYINITIAL> "boolean"            { return symbol(sym.BOOLEAN, yyline, yycolumn, yytext()); }
+<YYINITIAL> "break"              { return symbol(sym.BREAK, yyline, yycolumn, yytext()); }
+<YYINITIAL> "*"                  { return symbol(sym.TIMES, yyline, yycolumn, yytext()); }
 
 /*================================reglas de lexematizacion propias================================*/
-<YYINITIAL> "\."                 { return symbol(sym.DOT); }
-<YYINITIAL> {DecIntegerLiteral}  { return symbol(sym.INTEGER_LITERAL); }
-<YYINITIAL> {flotante}           { return symbol(sym.FLOTANTE); }
-<YYINITIAL> "true"               { return symbol(sym.TRUE); }
-<YYINITIAL> "false"              { return symbol(sym.FALSE); }
-<YYINITIAL> "if"                 { return symbol(sym.IF); }
-<YYINITIAL> "else"               { return symbol(sym.ELSE); }
-<YYINITIAL> "("                  { return symbol(sym.PARENTA); }
-<YYINITIAL> ")"                  { return symbol(sym.PARENTC); }
-<YYINITIAL> "["                  { return symbol(sym.PARENTCA); }
-<YYINITIAL> "]"                  { return symbol(sym.PARENTCC); }
-<YYINITIAL> "int"                { return symbol(sym.INT); }
-<YYINITIAL> ";"                  { return symbol(sym.ENDLINE); }
-<YYINITIAL> "float"              { return symbol(sym.FLOAT); }
-<YYINITIAL> "char"               { return symbol(sym.CHAR); }
-<YYINITIAL> "string"             { return symbol(sym.STRING); }
-<YYINITIAL> "array"              { return symbol(sym.ARRAY); }
-<YYINITIAL> "while"              { return symbol(sym.WHILE); }
-<YYINITIAL> "swich"              { return symbol(sym.SWICH); }
-<YYINITIAL> "case"               { return symbol(sym.CASE); }
-<YYINITIAL> "for"                { return symbol(sym.FOR); }
-<YYINITIAL> "in"                 { return symbol(sym.IN); }
-<YYINITIAL> "range"              { return symbol(sym.RANGE); }
-<YYINITIAL> ">"                  { return symbol(sym.GREATERT); }
-<YYINITIAL> "<"                  { return symbol(sym.LOWERT); }
-<YYINITIAL> ">="                 { return symbol(sym.GREATERE); }
-<YYINITIAL> "<="                 { return symbol(sym.LOWERE); }
-<YYINITIAL> "!"                  { return symbol(sym.NOT); }
-<YYINITIAL> "!="                 { return symbol(sym.NOTEQUALS); }
-<YYINITIAL> "&"                  { return symbol(sym.CONJUNTION); }
-<YYINITIAL> "|"                  { return symbol(sym.DISJUNTION); }
-<YYINITIAL> ":"                  { return symbol(sym.SEP); }
-<YYINITIAL> charc                { return symbol(sym.CHARC); }
-<YYINITIAL> "glob"               { return symbol(sym.GLOB); }
-<YYINITIAL> "loc"                { return symbol(sym.LOC); }
-<YYINITIAL> "return"             { return symbol(sym.RETURN); }
-<YYINITIAL> "printf"             { return symbol(sym.PRINTF); }
-<YYINITIAL> "func"               { return symbol(sym.FUNC); }
-<YYINITIAL> "main"               { return symbol(sym.MAIN); }
-<YYINITIAL> "param"              { return symbol(sym.PARAM); }
-<YYINITIAL> "read"               { return symbol(sym.READ); }
-<YYINITIAL> "default"            { return symbol(sym.DEFAULT); }
-<YYINITIAL> "_"                  { return symbol(sym.UNDERS); }
+<YYINITIAL> "\."                 { return symbol(sym.DOT, yyline, yycolumn, yytext()); }
+<YYINITIAL> {DecIntegerLiteral}  { return symbol(sym.INTEGER_LITERAL, yyline, yycolumn, yytext()); }
+<YYINITIAL> {flotante}           { return symbol(sym.FLOTANTE, yyline, yycolumn, yytext()); }
+<YYINITIAL> "true"               { return symbol(sym.TRUE, yyline, yycolumn, yytext()); }
+<YYINITIAL> "false"              { return symbol(sym.FALSE, yyline, yycolumn, yytext()); }
+<YYINITIAL> "if"                 { return symbol(sym.IF, yyline, yycolumn, yytext()); }
+<YYINITIAL> "else"               { return symbol(sym.ELSE, yyline, yycolumn, yytext()); }
+<YYINITIAL> "("                  { return symbol(sym.PARENTA, yyline, yycolumn, yytext()); }
+<YYINITIAL> ")"                  { return symbol(sym.PARENTC, yyline, yycolumn, yytext()); }
+<YYINITIAL> "["                  { return symbol(sym.PARENTCA, yyline, yycolumn, yytext()); }
+<YYINITIAL> "]"                  { return symbol(sym.PARENTCC, yyline, yycolumn, yytext()); }
+<YYINITIAL> "int"                { return symbol(sym.INT, yyline, yycolumn, yytext()); }
+<YYINITIAL> ";"                  { return symbol(sym.ENDLINE, yyline, yycolumn, yytext()); }
+<YYINITIAL> "float"              { return symbol(sym.FLOAT, yyline, yycolumn, yytext()); }
+<YYINITIAL> "char"               { return symbol(sym.CHAR, yyline, yycolumn, yytext()); }
+<YYINITIAL> "string"             { return symbol(sym.STRING, yyline, yycolumn, yytext()); }
+<YYINITIAL> "array"              { return symbol(sym.ARRAY, yyline, yycolumn, yytext()); }
+<YYINITIAL> "while"              { return symbol(sym.WHILE, yyline, yycolumn, yytext()); }
+<YYINITIAL> "swich"              { return symbol(sym.SWICH, yyline, yycolumn, yytext()); }
+<YYINITIAL> "case"               { return symbol(sym.CASE, yyline, yycolumn, yytext()); }
+<YYINITIAL> "for"                { return symbol(sym.FOR, yyline, yycolumn, yytext()); }
+<YYINITIAL> "in"                 { return symbol(sym.IN, yyline, yycolumn, yytext()); }
+<YYINITIAL> "range"              { return symbol(sym.RANGE, yyline, yycolumn, yytext()); }
+<YYINITIAL> ">"                  { return symbol(sym.GREATERT, yyline, yycolumn, yytext()); }
+<YYINITIAL> "<"                  { return symbol(sym.LOWERT, yyline, yycolumn, yytext()); }
+<YYINITIAL> ">="                 { return symbol(sym.GREATERE, yyline, yycolumn, yytext()); }
+<YYINITIAL> "<="                 { return symbol(sym.LOWERE, yyline, yycolumn, yytext()); }
+<YYINITIAL> "!"                  { return symbol(sym.NOT, yyline, yycolumn, yytext()); }
+<YYINITIAL> "!="                 { return symbol(sym.NOTEQUALS, yyline, yycolumn, yytext()); }
+<YYINITIAL> "&"                  { return symbol(sym.CONJUNTION, yyline, yycolumn, yytext()); }
+<YYINITIAL> "|"                  { return symbol(sym.DISJUNTION, yyline, yycolumn, yytext()); }
+<YYINITIAL> ":"                  { return symbol(sym.SEP, yyline, yycolumn, yytext()); }
+<YYINITIAL> charc                { return symbol(sym.CHARC, yyline, yycolumn, yytext()); }
+<YYINITIAL> "glob"               { return symbol(sym.GLOB, yyline, yycolumn, yytext()); }
+<YYINITIAL> "loc"                { return symbol(sym.LOC, yyline, yycolumn, yytext()); }
+<YYINITIAL> "return"             { return symbol(sym.RETURN, yyline, yycolumn, yytext()); }
+<YYINITIAL> "printf"             { return symbol(sym.PRINTF, yyline, yycolumn, yytext()); }
+<YYINITIAL> "func"               { return symbol(sym.FUNC, yyline, yycolumn, yytext()); }
+<YYINITIAL> "main"               { return symbol(sym.MAIN, yyline, yycolumn, yytext()); }
+<YYINITIAL> "param"              { return symbol(sym.PARAM, yyline, yycolumn, yytext()); }
+<YYINITIAL> "read"               { return symbol(sym.READ, yyline, yycolumn, yytext()); }
+<YYINITIAL> "default"            { return symbol(sym.DEFAULT, yyline, yycolumn, yytext()); }
+<YYINITIAL> "_"                  { return symbol(sym.UNDERS, yyline, yycolumn, yytext()); }
 
 /*================================reglas de lexematizacion propias================================*/
 
 <YYINITIAL> {
   /* identifiers */
-  {Identifier}                   { return symbol(sym.IDENTIFIER); }
+  {Identifier}                   { return symbol(sym.IDENTIFIER, yyline, yycolumn, yytext()); }
 
   /* literals */
   
   \"                             { string.setLength(0); yybegin(STRING); }
 
   /* operators */
-  "="                            { return symbol(sym.EQ); }
-  "=="                           { return symbol(sym.EQEQ); }
+  "="                            { return symbol(sym.EQ, yyline, yycolumn, yytext()); }
+  "=="                           { return symbol(sym.EQEQ, yyline, yycolumn, yytext()); }
   
-  "++"                           { return symbol(sym.PLUSP); }
-  "-"                            { return symbol(sym.MINUS); }
-  "--"                           { return symbol(sym.MINUSM); }
-  "/"                            { return symbol(sym.DIV); }
-  "^"                            { return symbol(sym.POT); }
-  "%"                            { return symbol(sym.MOD); }
+  "++"                           { return symbol(sym.PLUSP, yyline, yycolumn, yytext()); }
+  "-"                            { return symbol(sym.MINUS, yyline, yycolumn, yytext()); }
+  "--"                           { return symbol(sym.MINUSM, yyline, yycolumn, yytext()); }
+  "/"                            { return symbol(sym.DIV, yyline, yycolumn, yytext()); }
+  "^"                            { return symbol(sym.POT, yyline, yycolumn, yytext()); }
+  "%"                            { return symbol(sym.MOD, yyline, yycolumn, yytext()); }
   
 
   /* comments */
@@ -142,4 +145,9 @@ charc = [a-zA-Z]
   \\r                            { string.append('\r'); }
   \\\"                           { string.append('\"'); }
   \\                             { string.append('\\'); }
+}
+
+<YYINITIAL> . {
+    String errLex = "Error léxico : "+ yytext() + "en la linea: " +  (yyline+1) +  "y columna: " +  (yycolumn+1);
+    //System.out.println(errLex);
 }

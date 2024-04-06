@@ -10,6 +10,13 @@ parser code {:
         this.lex = lex;
         this.symbolFactory = new DefaultSymbolFactory();
     }
+    
+    public void syntax_error(Symbol s) {
+        System.out.println("Error R de sintaxis: " +  s.value + " linea: " +  (s.left+1) +  " columna: " +  (s.right+1));
+    }
+    public void unrecovered_syntax_error(Symbol s) {
+        System.out.println("Error R de sintaxis: " +  s.value + " linea: " +  (s.left+1) +  " columna: " +  (s.right+1));
+    } 
 :}
 
 /* define how to connect to the scanner! */
@@ -35,7 +42,8 @@ terminal            SEMICOLON;
 /* Non-terminals */
 non terminal expr_list;
 non terminal Integer expr; // used to store evaluated subexpressions
-non terminal String PROGRAMA, BODY, LINE, EXP, ASIG, FUNCTION_STATEMENT;
+non terminal String PROGRAMA, BODY, STATEMENT, EXP, ASIG, FUNCTION_STATEMENT, EXP_ARIT, VALUE, NUMBERS, EXP_COMP, BOOL, LINE, IF_STATEMENT, LINER;
+
 
 /* Precedences */
 
@@ -50,22 +58,62 @@ start with PROGRAMA;
 PROGRAMA  ::= BODY;
 
 //cuerpo del programa.
-BODY ::= BODY LINE | LINE;
+BODY ::= BODY STATEMENT | STATEMENT;
 
 //Lineas del codigo.
-LINE::= EXP ENDLINE | ASIG | FUNCTION_STATEMENT;
+STATEMENT::= 
+      LINER
+     | FUNCTION_STATEMENT
+     | error ENDLINE
+     | error UNDERS;
+
+//Lineas recursivas.
+LINE::=
+      LINER | LINE LINER;
+//Cuerpo de los statements.
+LINER::=
+        ASIG 
+      | IF_STATEMENT
+      | EXP;
+
+
+//Numeros
+NUMBERS ::= INTEGER_LITERAL | FLOTANTE;
+//BOOLEANOS
+BOOL ::= TRUE | FALSE;
 
 //Expresiones.
-EXP      ::= EXP PLUS EXP {: System.out.println("+");:}
-         | EXP MINUS EXP {: System.out.println("-");:} 
-         | EXP TIMES EXP {: System.out.println("*");:}
-         | EXP DIV EXP {: System.out.println("/");:}
-         | INTEGER_LITERAL {: System.out.println("Numero: "); :};
+EXP::= EXP_ARIT ENDLINE {:System.out.println("here");:} ;
+
+//expresiones aritmeticas.
+EXP_ARIT    ::= EXP_ARIT PLUS EXP_ARIT {: System.out.println("+");:}
+         | EXP_ARIT MINUS EXP_ARIT {: System.out.println("-");:} 
+         | EXP_ARIT TIMES EXP_ARIT {: System.out.println("*");:}
+         | EXP_ARIT DIV EXP_ARIT {: System.out.println("/");:}
+         | NUMBERS ;
+
+//expresiones de comparacion.
+EXP_COMP    ::= EXP_ARIT  GREATERT EXP_ARIT
+            |   EXP_ARIT LOWERT EXP_ARIT
+            |   EXP_ARIT GREATERE EXP_ARIT
+            |   EXP_ARIT LOWERE EXP_ARIT
+            |   EXP_ARIT EQ EXP_ARIT
+            |   BOOL;
+
 
 //Asignacion de valores a una variable.
-ASIG::= IDENTIFIER EQ INTEGER_LITERAL ENDLINE  {: System.out.println("Asignacion int "); :};
-ASIG::= IDENTIFIER EQ STRING_LITERAL ENDLINE  {: System.out.println("Asignacion string"); :};
+ASIG::= IDENTIFIER EQ VALUE ENDLINE {: System.out.println("Asignacion int "); :};
+
+//posibles valores que puede tener una asignacion.
+VALUE::= 
+         STRING_LITERAL{: System.out.println("Asignacion String "); :}
+        | EXP_COMP  {: System.out.println("Asignacion expresion de comp "); :}
+        | EXP_ARIT {: System.out.println("Asignacion exp "); :};
 
 //Declaracion de funciones.
-FUNCTION_STATEMENT::= FUNC SEP INT SEP MAIN UNDERS LINE UNDERS;
-FUNCTION_STATEMENT::= FUNC SEP INT SEP IDENTIFIER UNDERS LINE UNDERS;
+FUNCTION_STATEMENT::= FUNC SEP INT SEP MAIN UNDERS LINE UNDERS {: System.out.println("Main"); :};
+FUNCTION_STATEMENT::= FUNC SEP INT SEP IDENTIFIER UNDERS LINE UNDERS {: System.out.println("declaracion de funcion"); :};
+
+//Declaracion de IF.
+IF_STATEMENT ::= IF PARENTA EXP_COMP PARENTC UNDERS LINE UNDERS {: System.out.println("if statement"); :};
+IF_STATEMENT ::= IF PARENTA EXP_ARIT PARENTC UNDERS LINE UNDERS {: System.out.println("if statement"); :};
