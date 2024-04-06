@@ -20,34 +20,52 @@ scan with {:return lex.next_token();:};
 
 
 /* Terminals (tokens returned by the scanner). */
-terminal            SEMI, PLUS, MINUS, TIMES, UMINUS, LPAREN, RPAREN;
+terminal            SEMI, PLUS, PLUSP, MINUS, MINUSM, DIV, POT, MOD, TIMES, UMINUS, LPAREN, RPAREN, INTEGER_LITERAL;
 terminal Integer    NUMBER;        // our scanner provides numbers as integers
-terminal            IDENTIFIER, INTEGER_LITERAL, STRING_LITERAL, EQEQ, BREAK, BOOLEAN, ABSTRACT, EQ, DOT;
-terminal            FLOAT, ENTERO, INT;
+terminal            IDENTIFIER, STRING_LITERAL, EQEQ, BREAK, BOOLEAN, ABSTRACT, EQ, DOT;
+terminal            GREATERT, LOWERT, GREATERE, LOWERE, NOT, NOTEQUALS, CONJUNTION, DISJUNTION, SEP;
+terminal            FLOTANTE, ENTERO, INT, FLOAT, CHAR, CHARC, STRING, ARRAY;
 terminal            TRUE,FALSE;
-terminal            IF, ELSE;
-terminal            PARENTA, PARENTC;
+terminal            IF, ELSE, WHILE, FOR, IN, RANGE, SWICH, CASE;
+terminal            GLOB, LOC, RETURN, PRINTF, FUNC, MAIN, PARAM, READ, DEFAULT;
+terminal            PARENTA, PARENTC, PARENTCA, PARENTCC, UNDERS;
 terminal            ENDLINE;
+terminal            SEMICOLON;
 
-/* Non terminals */
-non terminal            expr_list;
-non terminal Integer    expr;      // used to store evaluated subexpressions
+/* Non-terminals */
+non terminal expr_list;
+non terminal Integer expr; // used to store evaluated subexpressions
+non terminal String PROGRAMA, BODY, LINE, EXP, ASIG, FUNCTION_STATEMENT;
 
 /* Precedences */
+
 precedence left PLUS, MINUS;
 precedence left TIMES;
+precedence left DIV;
 precedence left UMINUS;
 
-
 /* The grammar rules */
-expr_list ::= expr_list expr:e SEMI         {: System.out.println(e);:}
-            | expr:e SEMI                   {: System.out.println(e);:}
-;
-expr      ::= expr:e1 PLUS  expr:e2         {: RESULT = e1+e2;       :}
-             | expr:e1 MINUS expr:e2        {: RESULT = e1-e2;       :}
-             | expr:e1 TIMES expr:e2        {: RESULT = e1*e2;       :}
-             | MINUS expr:e                 {: RESULT = -e;          :}
-  	     %prec UMINUS
-       | LPAREN expr:e RPAREN	         {: RESULT = e;           :}
-       | NUMBER:n	                     {: RESULT = n;           :}
-             ;
+start with PROGRAMA;
+//Inicial.
+PROGRAMA  ::= BODY;
+
+//cuerpo del programa.
+BODY ::= BODY LINE | LINE;
+
+//Lineas del codigo.
+LINE::= EXP ENDLINE | ASIG | FUNCTION_STATEMENT;
+
+//Expresiones.
+EXP      ::= EXP PLUS EXP {: System.out.println("+");:}
+         | EXP MINUS EXP {: System.out.println("-");:} 
+         | EXP TIMES EXP {: System.out.println("*");:}
+         | EXP DIV EXP {: System.out.println("/");:}
+         | INTEGER_LITERAL {: System.out.println("Numero: "); :};
+
+//Asignacion de valores a una variable.
+ASIG::= IDENTIFIER EQ INTEGER_LITERAL ENDLINE  {: System.out.println("Asignacion int "); :};
+ASIG::= IDENTIFIER EQ STRING_LITERAL ENDLINE  {: System.out.println("Asignacion string"); :};
+
+//Declaracion de funciones.
+FUNCTION_STATEMENT::= FUNC SEP INT SEP MAIN UNDERS LINE UNDERS;
+FUNCTION_STATEMENT::= FUNC SEP INT SEP IDENTIFIER UNDERS LINE UNDERS;

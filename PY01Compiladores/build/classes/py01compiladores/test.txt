@@ -1,10 +1,8 @@
-+*+*+*+
-1234.23 
-324
-true
-false
-false
-(if)
-else
-int x = 54;
-
+12*15-5;
+15*4;
+56*45;
+cost = 43;
+cos = "df";
+func:int:main _ cos = "df"; _
+func:int:fun1 _ cos = "df"; _
+func:int:fun3 _ cos = "df"; _

@@ -35,9 +35,10 @@ terminal            SEMICOLON;
 /* Non-terminals */
 non terminal expr_list;
 non terminal Integer expr; // used to store evaluated subexpressions
-non terminal String PROGRAMA, BODY, LINE, STATEMENT, E;
+non terminal String PROGRAMA, BODY, LINE, EXP, ASIG, FUNCTION_STATEMENT;
 
 /* Precedences */
+
 precedence left PLUS, MINUS;
 precedence left TIMES;
 precedence left DIV;
@@ -45,19 +46,26 @@ precedence left UMINUS;
 
 /* The grammar rules */
 start with PROGRAMA;
-
+//Inicial.
 PROGRAMA  ::= BODY;
 
-BODY      ::= BODY LINE:l SEMI {: System.out.println(l);:}
-            | LINE:l SEMI {: System.out.println(l);:};
+//cuerpo del programa.
+BODY ::= BODY LINE | LINE;
 
-LINE      ::= STATEMENT | E;
+//Lineas del codigo.
+LINE::= EXP ENDLINE | ASIG | FUNCTION_STATEMENT;
 
-STATEMENT ::= IDENTIFIER EQ INTEGER_LITERAL;
+//Expresiones.
+EXP      ::= EXP PLUS EXP {: System.out.println("+");:}
+         | EXP MINUS EXP {: System.out.println("-");:} 
+         | EXP TIMES EXP {: System.out.println("*");:}
+         | EXP DIV EXP {: System.out.println("/");:}
+         | INTEGER_LITERAL {: System.out.println("Numero: "); :};
 
-E      ::= E PLUS E 
-         | E MINUS E 
-         | E TIMES E 
-         | E DIV E 
-         | INTEGER_LITERAL ;
+//Asignacion de valores a una variable.
+ASIG::= IDENTIFIER EQ INTEGER_LITERAL ENDLINE  {: System.out.println("Asignacion int "); :};
+ASIG::= IDENTIFIER EQ STRING_LITERAL ENDLINE  {: System.out.println("Asignacion string"); :};
 
+//Declaracion de funciones.
+FUNCTION_STATEMENT::= FUNC SEP INT SEP MAIN UNDERS LINE UNDERS;
+FUNCTION_STATEMENT::= FUNC SEP INT SEP IDENTIFIER UNDERS LINE UNDERS;
