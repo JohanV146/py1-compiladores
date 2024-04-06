@@ -8,48 +8,90 @@ package py01compiladores;
 /** CUP generated class containing symbol constants. */
 public class sym {
   /* terminals */
-  public static final int TIMES = 5;
-  public static final int ELSE = 25;
-  public static final int PLUS = 3;
-  public static final int INT = 21;
-  public static final int RPAREN = 8;
+  public static final int SEP = 32;
+  public static final int MINUSM = 6;
+  public static final int STRING_LITERAL = 17;
+  public static final int POT = 8;
+  public static final int CHAR = 37;
+  public static final int UMINUS = 11;
+  public static final int ENTERO = 34;
+  public static final int CASE = 50;
+  public static final int LPAREN = 12;
   public static final int SEMI = 2;
-  public static final int IDENTIFIER = 10;
-  public static final int TRUE = 22;
-  public static final int IF = 24;
-  public static final int LPAREN = 7;
-  public static final int STRING_LITERAL = 12;
-  public static final int BOOLEAN = 15;
-  public static final int FLOAT = 19;
+  public static final int INT = 35;
+  public static final int ARRAY = 40;
+  public static final int CHARC = 38;
+  public static final int FOR = 46;
+  public static final int MINUS = 5;
+  public static final int PARAM = 57;
+  public static final int RPAREN = 13;
+  public static final int NOT = 28;
+  public static final int RANGE = 48;
+  public static final int IN = 47;
+  public static final int ENDLINE = 65;
+  public static final int DIV = 7;
+  public static final int GREATERT = 24;
+  public static final int PLUS = 3;
+  public static final int MAIN = 56;
+  public static final int IF = 43;
+  public static final int PARENTC = 61;
+  public static final int DOT = 23;
+  public static final int PARENTA = 60;
+  public static final int ABSTRACT = 21;
   public static final int EOF = 0;
-  public static final int NUMBER = 9;
-  public static final int BREAK = 14;
-  public static final int FALSE = 23;
-  public static final int MINUS = 4;
-  public static final int ENDLINE = 28;
-  public static final int DOT = 18;
+  public static final int BOOLEAN = 20;
+  public static final int RETURN = 53;
+  public static final int TRUE = 41;
   public static final int error = 1;
-  public static final int EQ = 17;
-  public static final int ABSTRACT = 16;
-  public static final int INTEGER_LITERAL = 11;
-  public static final int PARENTC = 27;
-  public static final int ENTERO = 20;
-  public static final int EQEQ = 13;
-  public static final int PARENTA = 26;
-  public static final int UMINUS = 6;
+  public static final int PLUSP = 4;
+  public static final int PARENTCC = 63;
+  public static final int EQEQ = 18;
+  public static final int PARENTCA = 62;
+  public static final int GREATERE = 26;
+  public static final int NUMBER = 15;
+  public static final int MOD = 9;
+  public static final int BREAK = 19;
+  public static final int EQ = 22;
+  public static final int PRINTF = 54;
+  public static final int TIMES = 10;
+  public static final int LOWERT = 25;
+  public static final int LOC = 52;
+  public static final int ELSE = 44;
+  public static final int FUNC = 55;
+  public static final int READ = 58;
+  public static final int WHILE = 45;
+  public static final int NOTEQUALS = 29;
+  public static final int DEFAULT = 59;
+  public static final int FLOAT = 36;
+  public static final int CONJUNTION = 30;
+  public static final int UNDERS = 64;
+  public static final int LOWERE = 27;
+  public static final int DISJUNTION = 31;
+  public static final int STRING = 39;
+  public static final int GLOB = 51;
+  public static final int FALSE = 42;
+  public static final int SWICH = 49;
+  public static final int FLOTANTE = 33;
+  public static final int INTEGER_LITERAL = 14;
+  public static final int IDENTIFIER = 16;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
   "SEMI",
   "PLUS",
+  "PLUSP",
   "MINUS",
+  "MINUSM",
+  "DIV",
+  "POT",
+  "MOD",
   "TIMES",
   "UMINUS",
   "LPAREN",
   "RPAREN",
+  "INTEGER_LITERAL",
   "NUMBER",
   "IDENTIFIER",
-  "INTEGER_LITERAL",
   "STRING_LITERAL",
   "EQEQ",
   "BREAK",
@@ -57,15 +99,47 @@ public class sym {
   "ABSTRACT",
   "EQ",
   "DOT",
-  "FLOAT",
+  "GREATERT",
+  "LOWERT",
+  "GREATERE",
+  "LOWERE",
+  "NOT",
+  "NOTEQUALS",
+  "CONJUNTION",
+  "DISJUNTION",
+  "SEP",
+  "FLOTANTE",
   "ENTERO",
   "INT",
+  "FLOAT",
+  "CHAR",
+  "CHARC",
+  "STRING",
+  "ARRAY",
   "TRUE",
   "FALSE",
   "IF",
   "ELSE",
+  "WHILE",
+  "FOR",
+  "IN",
+  "RANGE",
+  "SWICH",
+  "CASE",
+  "GLOB",
+  "LOC",
+  "RETURN",
+  "PRINTF",
+  "FUNC",
+  "MAIN",
+  "PARAM",
+  "READ",
+  "DEFAULT",
   "PARENTA",
   "PARENTC",
+  "PARENTCA",
+  "PARENTCC",
+  "UNDERS",
   "ENDLINE"
   };
 }

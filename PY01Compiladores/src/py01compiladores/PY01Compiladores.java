@@ -10,10 +10,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import static java.time.Clock.system;
+import java_cup.parser;
 import java_cup.runtime.Symbol;
 import jflex.exceptions.SilentExit;
 import static jflex.logging.Out.println;
@@ -26,38 +29,9 @@ public class PY01Compiladores {
     /**
      * @param args the command line arguments
      * @throws jflex.exceptions.SilentExit
+     * @throws java.lang.Exception
      */
-    public static void main(String[] args) throws SilentExit, Exception {
-        // TODO code application logic here
-        String path = "C:\\Users\\truez\\Documents\\NetBeansProjects\\PY01Compiladores\\src\\py01compiladores\\Lexer.flex";
-        String path2 = "C:\\Users\\truez\\Documents\\NetBeansProjects\\PY01Compiladores\\src\\py01compiladores\\ASint.cup";
-                // Obtener la ruta actual del directorio de trabajo
-                
-        Path currentPath = Paths.get("");
-        Path absolutePath = currentPath.toAbsolutePath();
-        String currentDirectory = absolutePath.toString(); 
-        
-        String symLocation = currentDirectory + "\\sym.java";
-        String ParserLocation = currentDirectory + "\\Parser.java";
-        
-        
-        Path sym1 = Paths.get("").toAbsolutePath();
-        String symd1 = sym1.toString();
-        symd1 = symd1 + "\\src\\py01compiladores\\sym.java";
-
-        Path par1 = Paths.get("").toAbsolutePath();
-        String pard1 = par1.toString();
-        pard1 = pard1 + "\\src\\py01compiladores\\Parser.java";
-        
-        generarLexer(path);
-        generarParser(path2);
-        
-        Files.move(Paths.get(symLocation), Paths.get(symd1), StandardCopyOption.REPLACE_EXISTING);
-        Files.move(Paths.get(ParserLocation), Paths.get(pard1), StandardCopyOption.REPLACE_EXISTING);
-        
-        test1("C:\\Users\\truez\\Documents\\NetBeansProjects\\PY01Compiladores\\src\\py01compiladores\\test.txt");
     
-    }
     public static void generarLexer(String path) throws SilentExit {
         String[] strArr =  {path};
         jflex.Main.generate(strArr);
@@ -68,22 +42,63 @@ public class PY01Compiladores {
         java_cup.Main.main(strArr);
     }
     
-    public static void test1(String ruta) throws FileNotFoundException, IOException {
-        Reader reader = new BufferedReader(new FileReader(ruta));
-        reader.read();
-        Lexer lex = new Lexer(reader);
-        int i = 0;
-        Symbol token;
-        while(true) {
-            token = lex.next_token();
-            if (token.sym != 0) {
-                System.out.println("Token: " + token.sym + " " +  (token.value==null?lex.yytext():token.value.toString()));
-            } else {
-                System.out.println("cantidad de lexemas encontrador: " + i);
-                return;
+    public static void test1(String ruta) throws FileNotFoundException, IOException, Exception {
+        try (Reader reader = new BufferedReader(new FileReader(ruta))) {
+            Lexer lex = new Lexer(reader);
+            int i = 0;
+            Symbol token;
+            while (true) {
+                token = lex.next_token();
+                if (token.sym != 0) {
+                    System.out.println("Token: " + token.sym + " " + (token.value == null ? lex.yytext() : token.value.toString()));
+                } else {
+                    System.out.println("Cantidad de lexemas encontrados: " + i);
+                    return;
+                }
+                i++;
             }
-            i++;
         }
+    }
+
+    
+    public static void test2(String contenido) throws IOException, Exception {
+        Reader reader = new StringReader("5+6"); 
+        Lexer lex = new Lexer(reader);
+        Parser Myparser = new Parser(lex);
+        Myparser.parse();
+    }
+    
+    public static void main(String[] args) throws SilentExit, Exception {
+                
+        Path currentPath = Paths.get("");
+        Path absolutePath = currentPath.toAbsolutePath();
+        String currentDirectory = absolutePath.toString(); 
+        
+        String path = currentDirectory + "\\src\\py01compiladores\\lexer.flex";
+        String path2 = currentDirectory + "\\src\\py01compiladores\\ASint.cup";
+        
+        String path3 = currentDirectory + "\\src\\py01compiladores\\test.txt";
+        
+        String symLocation = currentDirectory + "\\sym.java";
+        String ParserLocation = currentDirectory + "\\Parser.java";
+       
+        Path sym1 = Paths.get("").toAbsolutePath();
+        String symd1 = sym1.toString();
+        symd1 = symd1 + "\\src\\py01compiladores\\sym.java";
+
+        Path par1 = Paths.get("").toAbsolutePath();
+        String pard1 = par1.toString();
+        pard1 = pard1 + "\\src\\py01compiladores\\Parser.java";
+        
+        generarLexer(path);
+        generarParser(path2);
+        //
+        Files.move(Paths.get(symLocation), Paths.get(symd1), StandardCopyOption.REPLACE_EXISTING);
+        Files.move(Paths.get(ParserLocation), Paths.get(pard1), StandardCopyOption.REPLACE_EXISTING);
+        
+        test1(path3);
+        test2(path3);
+    
     }
 }
     
