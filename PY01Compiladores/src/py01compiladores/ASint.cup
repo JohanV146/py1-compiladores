@@ -30,11 +30,12 @@ terminal            IF, ELSE, WHILE, FOR, IN, RANGE, SWICH, CASE;
 terminal            GLOB, LOC, RETURN, PRINTF, FUNC, MAIN, PARAM, READ, DEFAULT;
 terminal            PARENTA, PARENTC, PARENTCA, PARENTCC, UNDERS;
 terminal            ENDLINE;
+terminal            SEMICOLON;
 
 /* Non-terminals */
 non terminal expr_list;
 non terminal Integer expr; // used to store evaluated subexpressions
-non terminal String INICIO, E;
+non terminal String PROGRAMA, BODY, LINE, STATEMENT, E;
 
 /* Precedences */
 precedence left PLUS, MINUS;
@@ -43,12 +44,20 @@ precedence left DIV;
 precedence left UMINUS;
 
 /* The grammar rules */
-start with INICIO;
+start with PROGRAMA;
 
-INICIO ::= E;
+PROGRAMA  ::= BODY;
 
-E      ::= E PLUS E
-         | E MINUS E
-         | E TIMES E
-         | E DIV E
-         | ENTERO;
+BODY      ::= BODY LINE:l SEMI {: System.out.println(l);:}
+            | LINE:l SEMI {: System.out.println(l);:};
+
+LINE      ::= STATEMENT | E;
+
+STATEMENT ::= IDENTIFIER EQ INTEGER_LITERAL;
+
+E      ::= E PLUS E 
+         | E MINUS E 
+         | E TIMES E 
+         | E DIV E 
+         | INTEGER_LITERAL ;
+

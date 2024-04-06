@@ -61,11 +61,12 @@ public class PY01Compiladores {
     }
 
     
-    public static void test2(String contenido) throws IOException, Exception {
-        Reader reader = new StringReader("5+6"); 
-        Lexer lex = new Lexer(reader);
-        Parser Myparser = new Parser(lex);
-        Myparser.parse();
+    public static void test2(String ruta) throws IOException, Exception {
+        try (Reader reader = new BufferedReader(new FileReader(ruta))) {
+            Lexer lex = new Lexer(reader);  // Crea un analizador léxico para el archivo
+            Parser myParser = new Parser(lex);  // Crea un analizador sintáctico y le pasa el analizador léxico
+            myParser.parse();  // Parsea el contenido del archivo
+        }
     }
     
     public static void main(String[] args) throws SilentExit, Exception {
@@ -97,11 +98,6 @@ public class PY01Compiladores {
         Files.move(Paths.get(ParserLocation), Paths.get(pard1), StandardCopyOption.REPLACE_EXISTING);
         
         test1(path3);
-        test2(path3);
-    
+        test2(path3);  
     }
 }
-    
-    
-    
-

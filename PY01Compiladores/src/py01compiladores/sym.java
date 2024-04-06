@@ -25,6 +25,7 @@ public class sym {
   public static final int MINUS = 5;
   public static final int PARAM = 57;
   public static final int RPAREN = 13;
+  public static final int SEMICOLON = 66;
   public static final int NOT = 28;
   public static final int RANGE = 48;
   public static final int IN = 47;
@@ -140,7 +141,8 @@ public class sym {
   "PARENTCA",
   "PARENTCC",
   "UNDERS",
-  "ENDLINE"
+  "ENDLINE",
+  "SEMICOLON"
   };
 }
 
