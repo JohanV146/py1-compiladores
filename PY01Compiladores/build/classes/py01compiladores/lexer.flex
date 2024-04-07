@@ -90,8 +90,8 @@ charc = [a-zA-Z]
 <YYINITIAL> "<="                 { return symbol(sym.LOWERE, yyline, yycolumn, yytext()); }
 <YYINITIAL> "!"                  { return symbol(sym.NOT, yyline, yycolumn, yytext()); }
 <YYINITIAL> "!="                 { return symbol(sym.NOTEQUALS, yyline, yycolumn, yytext()); }
-<YYINITIAL> "&"                  { return symbol(sym.CONJUNTION, yyline, yycolumn, yytext()); }
-<YYINITIAL> "|"                  { return symbol(sym.DISJUNTION, yyline, yycolumn, yytext()); }
+<YYINITIAL> "&&"                  { return symbol(sym.CONJUNTION, yyline, yycolumn, yytext()); }
+<YYINITIAL> "||"                  { return symbol(sym.DISJUNTION, yyline, yycolumn, yytext()); }
 <YYINITIAL> ":"                  { return symbol(sym.SEP, yyline, yycolumn, yytext()); }
 <YYINITIAL> charc                { return symbol(sym.CHARC, yyline, yycolumn, yytext()); }
 <YYINITIAL> "glob"               { return symbol(sym.GLOB, yyline, yycolumn, yytext()); }

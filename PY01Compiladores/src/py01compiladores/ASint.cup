@@ -42,8 +42,8 @@ terminal            SEMICOLON;
 /* Non-terminals */
 non terminal expr_list;
 non terminal Integer expr; // used to store evaluated subexpressions
-non terminal String PROGRAMA, BODY, STATEMENT, EXP, ASIG, FUNCTION_STATEMENT, EXP_ARIT, VALUE, NUMBERS, EXP_COMP, BOOL, LINE, IF_STATEMENT, LINER;
-
+non terminal String PROGRAMA, BODY, STATEMENT, EXP, ASIG, FUNCTION_STATEMENT, EXP_ARIT, VALUE, NUMBERS, EXP_REL, BOOL, LINE, IF_STATEMENT, LINER, TERM, FACTOR, OPER_REL, EXP_REL_LOG;
+non terminal String EXP_LOG, OPER_LOG, OPERA_LOG ;
 
 /* Precedences */
 
@@ -51,6 +51,7 @@ precedence left PLUS, MINUS;
 precedence left TIMES;
 precedence left DIV;
 precedence left UMINUS;
+
 
 /* The grammar rules */
 start with PROGRAMA;
@@ -76,44 +77,71 @@ LINER::=
       | IF_STATEMENT
       | EXP;
 
-
+//===============================================================================Expresiones Aritmeticas==================================================================
 //Numeros
 NUMBERS ::= INTEGER_LITERAL | FLOTANTE;
 //BOOLEANOS
 BOOL ::= TRUE | FALSE;
 
 //Expresiones.
-EXP::= EXP_ARIT ENDLINE {:System.out.println("here");:} ;
+EXP::= EXP_REL_LOG ENDLINE {:System.out.println("expCOmp");:};
 
 //expresiones aritmeticas.
-EXP_ARIT    ::= EXP_ARIT PLUS EXP_ARIT {: System.out.println("+");:}
-         | EXP_ARIT MINUS EXP_ARIT {: System.out.println("-");:} 
-         | EXP_ARIT TIMES EXP_ARIT {: System.out.println("*");:}
-         | EXP_ARIT DIV EXP_ARIT {: System.out.println("/");:}
-         | NUMBERS ;
+EXP_ARIT    ::= EXP_ARIT    PLUS    TERM
+              | EXP_ARIT    MINUS   TERM  
+              | TERM;
 
-//expresiones de comparacion.
-EXP_COMP    ::= EXP_ARIT  GREATERT EXP_ARIT
-            |   EXP_ARIT LOWERT EXP_ARIT
-            |   EXP_ARIT GREATERE EXP_ARIT
-            |   EXP_ARIT LOWERE EXP_ARIT
-            |   EXP_ARIT EQ EXP_ARIT
-            |   BOOL;
+TERM ::=    TERM TIMES FACTOR
+        |   TERM DIV FACTOR
+        |   FACTOR;
+FACTOR::=  PARENTA EXP_ARIT PARENTC
+        |  NUMBERS
+        | STRING_LITERAL
+        |  IDENTIFIER;
+//===============================================================================Expresiones Aritmeticas End==================================================================
 
+//===============================================================================Expresiones relacionales==================================================================
+//operaciones relacionales logicas.
+EXP_REL_LOG ::= EXP_REL | EXP_LOG;
 
+EXP_REL    ::= EXP_ARIT    OPER_REL    EXP_ARIT 
+            | PARENTA EXP_REL PARENTC
+            | BOOL;
+
+//Operador logico.
+EXP_LOG ::= OPER_LOG 
+          | EXP_REL  OPERA_LOG EXP_REL_LOG
+          | PARENTA EXP_REL  OPERA_LOG EXP_REL_LOG PARENTC //parentesis para las expresiones.
+          | IDENTIFIER OPERA_LOG EXP_REL_LOG
+          | PARENTA IDENTIFIER  OPERA_LOG EXP_REL_LOG PARENTC; //parentesis para los identificadores.
+
+//operando logico.
+OPER_LOG ::= EXP_ARIT;
+
+//Operadores relacionales.
+OPER_REL ::= GREATERT | GREATERE |  LOWERT | LOWERE | EQEQ;
+OPERA_LOG ::= DISJUNTION | CONJUNTION;
+//===============================================================================Expresiones Relacionales End==================================================================
+
+//===============================================================================Asignaciones y declaraciones==================================================================
 //Asignacion de valores a una variable.
-ASIG::= IDENTIFIER EQ VALUE ENDLINE {: System.out.println("Asignacion int "); :};
+ASIG::= IDENTIFIER EQ VALUE ENDLINE {: System.out.println("Asignacion "); :};
 
 //posibles valores que puede tener una asignacion.
-VALUE::= 
-         STRING_LITERAL{: System.out.println("Asignacion String "); :}
-        | EXP_COMP  {: System.out.println("Asignacion expresion de comp "); :}
-        | EXP_ARIT {: System.out.println("Asignacion exp "); :};
+VALUE::= EXP_REL_LOG  {: System.out.println("Asignacion expresion de comp "); :};
+//===============================================================================Asignaciones y declaraciones End==================================================================
 
+
+//===============================================================================Funcion==================================================================
 //Declaracion de funciones.
 FUNCTION_STATEMENT::= FUNC SEP INT SEP MAIN UNDERS LINE UNDERS {: System.out.println("Main"); :};
 FUNCTION_STATEMENT::= FUNC SEP INT SEP IDENTIFIER UNDERS LINE UNDERS {: System.out.println("declaracion de funcion"); :};
 
+//===============================================================================Funciones End==================================================================
+
+
+//===============================================================================Estructuras de control==================================================================
 //Declaracion de IF.
-IF_STATEMENT ::= IF PARENTA EXP_COMP PARENTC UNDERS LINE UNDERS {: System.out.println("if statement"); :};
-IF_STATEMENT ::= IF PARENTA EXP_ARIT PARENTC UNDERS LINE UNDERS {: System.out.println("if statement"); :};
+IF_STATEMENT ::= IF PARENTA EXP_REL_LOG PARENTC UNDERS LINE UNDERS {: System.out.println("if statement"); :};
+
+//===============================================================================Estructuras de control End==================================================================
