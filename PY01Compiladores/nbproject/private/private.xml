@@ -5,12 +5,12 @@
             <url>src/py01compiladores/ASint.cup</url>
             <bookmark id="1">
                 <name/>
-                <line>104</line>
+                <line>107</line>
                 <key/>
             </bookmark>
             <bookmark id="2">
                 <name/>
-                <line>114</line>
+                <line>117</line>
                 <key/>
             </bookmark>
         </file>
@@ -18,8 +18,9 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/truez/Documents/NetBeansProjects/PY01Compiladores/src/py01compiladores/lexer.flex</file>
-            <file>file:/C:/Users/truez/Documents/NetBeansProjects/PY01Compiladores/src/py01compiladores/test.txt</file>
             <file>file:/C:/Users/truez/Documents/NetBeansProjects/PY01Compiladores/src/py01compiladores/ASint.cup</file>
+            <file>file:/C:/Users/truez/Documents/NetBeansProjects/PY01Compiladores/src/py01compiladores/test.txt</file>
+            <file>file:/C:/Users/truez/Documents/NetBeansProjects/PY01Compiladores/src/py01compiladores/sym.java</file>
             <file>file:/C:/Users/truez/Documents/NetBeansProjects/PY01Compiladores/src/py01compiladores/PY01Compiladores.java</file>
         </group>
     </open-files>

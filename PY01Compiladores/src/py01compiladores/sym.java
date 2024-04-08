@@ -12,6 +12,7 @@ public class sym {
   public static final int MINUSM = 6;
   public static final int STRING_LITERAL = 17;
   public static final int POT = 8;
+  public static final int BOOOLEANF = 66;
   public static final int CHAR = 37;
   public static final int UMINUS = 11;
   public static final int ENTERO = 34;
@@ -25,7 +26,7 @@ public class sym {
   public static final int MINUS = 5;
   public static final int PARAM = 57;
   public static final int RPAREN = 13;
-  public static final int SEMICOLON = 66;
+  public static final int SEMICOLON = 68;
   public static final int NOT = 28;
   public static final int RANGE = 48;
   public static final int IN = 47;
@@ -45,6 +46,7 @@ public class sym {
   public static final int TRUE = 41;
   public static final int error = 1;
   public static final int PLUSP = 4;
+  public static final int COMA = 67;
   public static final int PARENTCC = 63;
   public static final int EQEQ = 18;
   public static final int PARENTCA = 62;
@@ -142,6 +144,8 @@ public class sym {
   "PARENTCC",
   "UNDERS",
   "ENDLINE",
+  "BOOOLEANF",
+  "COMA",
   "SEMICOLON"
   };
 }

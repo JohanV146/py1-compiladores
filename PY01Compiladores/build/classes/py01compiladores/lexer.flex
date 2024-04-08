@@ -64,6 +64,7 @@ charc = [a-zA-Z]
 <YYINITIAL> "\."                 { return symbol(sym.DOT, yyline, yycolumn, yytext()); }
 <YYINITIAL> {DecIntegerLiteral}  { return symbol(sym.INTEGER_LITERAL, yyline, yycolumn, yytext()); }
 <YYINITIAL> {flotante}           { return symbol(sym.FLOTANTE, yyline, yycolumn, yytext()); }
+<YYINITIAL> "bool"               { return symbol(sym.BOOOLEANF, yyline, yycolumn, yytext()); }
 <YYINITIAL> "true"               { return symbol(sym.TRUE, yyline, yycolumn, yytext()); }
 <YYINITIAL> "false"              { return symbol(sym.FALSE, yyline, yycolumn, yytext()); }
 <YYINITIAL> "if"                 { return symbol(sym.IF, yyline, yycolumn, yytext()); }
@@ -104,6 +105,7 @@ charc = [a-zA-Z]
 <YYINITIAL> "read"               { return symbol(sym.READ, yyline, yycolumn, yytext()); }
 <YYINITIAL> "default"            { return symbol(sym.DEFAULT, yyline, yycolumn, yytext()); }
 <YYINITIAL> "_"                  { return symbol(sym.UNDERS, yyline, yycolumn, yytext()); }
+<YYINITIAL> ","                  { return symbol(sym.COMA, yyline, yycolumn, yytext()); }
 
 /*================================reglas de lexematizacion propias================================*/
 

@@ -1,26 +1,37 @@
-((5+6) > 6)|| randall || (5+1 < randall);
+glob:char:pi;glob:int:pi;/*semantico*/
+glob:bool:pi;/*semantico*/
+glob:string:pi;/*semantico*/
+
+glob:char:pi;
+glob:int:pi = "d";
+glob:bool:pi = true;
+glob:string:pi = "dxcx";
+glob:int:pi = (randall || eandal && randall && (5+6 >6));
+
+miFunc(miFunc(),"a");
+miFunc(randall, "a");
+miFunc(miFunc());
+miFunc(ere);
+
+((5+6) > 6)|| randall;
 (randall || eandal && randall && (5+6 >6));
 (randal > "ewcdc");
-
+4-6;
 x22<=45&&var>5.6;
 12*15-5;
 cant = 56*5234;
 cos =  "randall";
 cos =  x22<=45&&var>5.6;
-cos =  (x22<=45&&var>5.6);
-cos =  randall;
-cos =  "randall" > randls;
-
 
 func:int:main_ 
                 cos = "df";
                 cant = 56*5234;
                 cos = 5 < 7;
                 if(x22<=45&&var>5.6)_cos = 5 < 7;_
-                
-                if(675 > 56 + 5)_cos = 5 < 7;_
+                if(miFunc(randall, "a", randall[5]))_cos = 5 < 7;_
             _
 func:int:fun1_ cos = "df"; _
 func:int:fun3_ cos = "df"; _
-
 if(true)_cos = 5 < 7;_
+
+arr = 10 - arr[67] * func1 (hola, true, "hola mundo", 4.5, 'a');

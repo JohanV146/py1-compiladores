@@ -97,7 +97,7 @@ public class PY01Compiladores {
         Files.move(Paths.get(symLocation), Paths.get(symd1), StandardCopyOption.REPLACE_EXISTING);
         Files.move(Paths.get(ParserLocation), Paths.get(pard1), StandardCopyOption.REPLACE_EXISTING);
         
-        //test1(path3);
+        test1(path3);
         test2(path3);  
     }
 }

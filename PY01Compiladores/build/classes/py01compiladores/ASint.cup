@@ -36,14 +36,14 @@ terminal            TRUE,FALSE;
 terminal            IF, ELSE, WHILE, FOR, IN, RANGE, SWICH, CASE;
 terminal            GLOB, LOC, RETURN, PRINTF, FUNC, MAIN, PARAM, READ, DEFAULT;
 terminal            PARENTA, PARENTC, PARENTCA, PARENTCC, UNDERS;
-terminal            ENDLINE;
+terminal            ENDLINE, BOOOLEANF, COMA;
 terminal            SEMICOLON;
 
 /* Non-terminals */
 non terminal expr_list;
 non terminal Integer expr; // used to store evaluated subexpressions
 non terminal String PROGRAMA, BODY, STATEMENT, EXP, ASIG, FUNCTION_STATEMENT, EXP_ARIT, VALUE, NUMBERS, EXP_REL, BOOL, LINE, IF_STATEMENT, LINER, TERM, FACTOR, OPER_REL, EXP_REL_LOG;
-non terminal String EXP_LOG, OPER_LOG, OPERA_LOG ;
+non terminal String EXP_LOG, OPER_LOG, OPERA_LOG, DECL, TYPES, INV_FUNC, PARAMS, PARAMETER, INV_ARRAY;
 
 /* Precedences */
 
@@ -65,6 +65,7 @@ BODY ::= BODY STATEMENT | STATEMENT;
 STATEMENT::= 
       LINER
      | FUNCTION_STATEMENT
+     | DECL
      | error ENDLINE
      | error UNDERS;
 
@@ -84,20 +85,22 @@ NUMBERS ::= INTEGER_LITERAL | FLOTANTE;
 BOOL ::= TRUE | FALSE;
 
 //Expresiones.
-EXP::= EXP_REL_LOG ENDLINE {:System.out.println("expCOmp");:};
+EXP::= EXP_REL_LOG ENDLINE;
 
 //expresiones aritmeticas.
 EXP_ARIT    ::= EXP_ARIT    PLUS    TERM
               | EXP_ARIT    MINUS   TERM  
               | TERM;
 
-TERM ::=    TERM TIMES FACTOR
-        |   TERM DIV FACTOR
-        |   FACTOR;
-FACTOR::=  PARENTA EXP_ARIT PARENTC
-        |  NUMBERS
-        | STRING_LITERAL
-        |  IDENTIFIER;
+TERM    ::=    TERM TIMES FACTOR
+            |   TERM DIV FACTOR
+            |   FACTOR;
+FACTOR  ::=  PARENTA EXP_ARIT PARENTC
+            | NUMBERS
+            | STRING_LITERAL
+            | IDENTIFIER
+            | INV_FUNC
+            | INV_ARRAY;
 //===============================================================================Expresiones Aritmeticas End==================================================================
 
 //===============================================================================Expresiones relacionales==================================================================
@@ -127,8 +130,13 @@ OPERA_LOG ::= DISJUNTION | CONJUNTION;
 //Asignacion de valores a una variable.
 ASIG::= IDENTIFIER EQ VALUE ENDLINE {: System.out.println("Asignacion "); :};
 
+DECL::= GLOB SEP TYPES SEP IDENTIFIER ENDLINE {: System.out.println("Declaracion de variables globales "); :};
+DECL::= GLOB SEP TYPES SEP IDENTIFIER EQ VALUE ENDLINE {: System.out.println("Declaracion de variables globales con asig"); :};
+
+TYPES::= CHAR | FLOAT | STRING | INT | BOOOLEANF;
+
 //posibles valores que puede tener una asignacion.
-VALUE::= EXP_REL_LOG  {: System.out.println("Asignacion expresion de comp "); :};
+VALUE::= EXP_REL_LOG;
 //===============================================================================Asignaciones y declaraciones End==================================================================
 
 
@@ -136,6 +144,18 @@ VALUE::= EXP_REL_LOG  {: System.out.println("Asignacion expresion de comp "); :}
 //Declaracion de funciones.
 FUNCTION_STATEMENT::= FUNC SEP INT SEP MAIN UNDERS LINE UNDERS {: System.out.println("Main"); :};
 FUNCTION_STATEMENT::= FUNC SEP INT SEP IDENTIFIER UNDERS LINE UNDERS {: System.out.println("declaracion de funcion"); :};
+
+
+INV_FUNC ::= IDENTIFIER PARENTA PARENTC {: System.out.println("Invocacion de funcion sin parametros."); :};
+INV_FUNC ::= IDENTIFIER PARENTA PARAMS PARENTC {: System.out.println("Invocacion de funcion con parametros."); :};
+
+PARAMS ::= PARAMETER COMA PARAMS;
+PARAMS ::= PARAMETER;
+
+PARAMETER ::= VALUE;
+
+//Invocaciones de un array
+INV_ARRAY ::= IDENTIFIER PARENTCA INTEGER_LITERAL PARENTCC;
 
 //===============================================================================Funciones End==================================================================
 
