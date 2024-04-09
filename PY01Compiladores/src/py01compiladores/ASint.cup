@@ -43,7 +43,7 @@ terminal            SEMICOLON;
 non terminal expr_list;
 non terminal Integer expr; // used to store evaluated subexpressions
 non terminal String PROGRAMA, BODY, STATEMENT, EXP, ASIG, FUNCTION_STATEMENT, EXP_ARIT, VALUE, NUMBERS, EXP_REL, BOOL, LINE, IF_STATEMENT, LINER, TERM, FACTOR, OPER_REL, EXP_REL_LOG;
-non terminal String EXP_LOG, OPER_LOG, OPERA_LOG, DECL, TYPES, INV_FUNC, PARAMS, PARAMETER, INV_ARRAY;
+non terminal String EXP_LOG, OPER_LOG, OPERA_LOG, DECL, DECLOC, TYPES, INV_FUNC, PARAMS, PARAMETER, INV_ARRAY, DECLARRAY;
 
 /* Precedences */
 
@@ -74,8 +74,10 @@ LINE::=
       LINER | LINE LINER;
 //Cuerpo de los statements.
 LINER::=
-        ASIG 
+        ASIG
+      | DECLOC
       | IF_STATEMENT
+      | DECLARRAY
       | EXP;
 
 //===============================================================================Expresiones Aritmeticas==================================================================
@@ -133,6 +135,9 @@ ASIG::= IDENTIFIER EQ VALUE ENDLINE {: System.out.println("Asignacion "); :};
 DECL::= GLOB SEP TYPES SEP IDENTIFIER ENDLINE {: System.out.println("Declaracion de variables globales "); :};
 DECL::= GLOB SEP TYPES SEP IDENTIFIER EQ VALUE ENDLINE {: System.out.println("Declaracion de variables globales con asig"); :};
 
+DECLOC::= LOC SEP TYPES SEP IDENTIFIER ENDLINE {: System.out.println("Declaracion de variables LOCALES "); :};
+DECLOC::= LOC SEP TYPES SEP IDENTIFIER EQ VALUE ENDLINE {: System.out.println("Declaracion de variables LOCALES con asig"); :};
+
 TYPES::= CHAR | FLOAT | STRING | INT | BOOOLEANF;
 
 //posibles valores que puede tener una asignacion.
@@ -156,6 +161,8 @@ PARAMETER ::= VALUE;
 
 //Invocaciones de un array
 INV_ARRAY ::= IDENTIFIER PARENTCA INTEGER_LITERAL PARENTCC;
+DECLARRAY ::= CHAR SEP IDENTIFIER PARENTCA INTEGER_LITERAL PARENTCC EQ VALUE ENDLINE;
+DECLARRAY ::= INT SEP IDENTIFIER PARENTCA INTEGER_LITERAL PARENTCC EQ VALUE ENDLINE;
 
 //===============================================================================Funciones End==================================================================
 
