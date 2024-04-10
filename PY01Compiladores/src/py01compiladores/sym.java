@@ -56,6 +56,7 @@ public class sym {
   public static final int BREAK = 19;
   public static final int EQ = 22;
   public static final int PRINTF = 54;
+  public static final int SWITCH = 49;
   public static final int TIMES = 10;
   public static final int LOWERT = 25;
   public static final int LOC = 52;
@@ -73,7 +74,6 @@ public class sym {
   public static final int STRING = 39;
   public static final int GLOB = 51;
   public static final int FALSE = 42;
-  public static final int SWICH = 49;
   public static final int FLOTANTE = 33;
   public static final int INTEGER_LITERAL = 14;
   public static final int IDENTIFIER = 16;
@@ -127,7 +127,7 @@ public class sym {
   "FOR",
   "IN",
   "RANGE",
-  "SWICH",
+  "SWITCH",
   "CASE",
   "GLOB",
   "LOC",

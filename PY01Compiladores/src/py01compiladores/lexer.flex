@@ -80,7 +80,7 @@ charc = [a-zA-Z]
 <YYINITIAL> "string"             { return symbol(sym.STRING, yyline, yycolumn, yytext()); }
 <YYINITIAL> "array"              { return symbol(sym.ARRAY, yyline, yycolumn, yytext()); }
 <YYINITIAL> "while"              { return symbol(sym.WHILE, yyline, yycolumn, yytext()); }
-<YYINITIAL> "swich"              { return symbol(sym.SWICH, yyline, yycolumn, yytext()); }
+<YYINITIAL> "switch"              { return symbol(sym.SWITCH, yyline, yycolumn, yytext()); }
 <YYINITIAL> "case"               { return symbol(sym.CASE, yyline, yycolumn, yytext()); }
 <YYINITIAL> "for"                { return symbol(sym.FOR, yyline, yycolumn, yytext()); }
 <YYINITIAL> "in"                 { return symbol(sym.IN, yyline, yycolumn, yytext()); }

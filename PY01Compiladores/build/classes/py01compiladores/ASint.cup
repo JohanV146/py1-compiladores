@@ -33,7 +33,7 @@ terminal            IDENTIFIER, STRING_LITERAL, EQEQ, BREAK, BOOLEAN, ABSTRACT, 
 terminal            GREATERT, LOWERT, GREATERE, LOWERE, NOT, NOTEQUALS, CONJUNTION, DISJUNTION, SEP;
 terminal            FLOTANTE, ENTERO, INT, FLOAT, CHAR, CHARC, STRING, ARRAY;
 terminal            TRUE,FALSE;
-terminal            IF, ELSE, WHILE, FOR, IN, RANGE, SWICH, CASE;
+terminal            IF, ELSE, WHILE, FOR, IN, RANGE, SWITCH, CASE;
 terminal            GLOB, LOC, RETURN, PRINTF, FUNC, MAIN, PARAM, READ, DEFAULT;
 terminal            PARENTA, PARENTC, PARENTCA, PARENTCC, UNDERS;
 terminal            ENDLINE, BOOOLEANF, COMA;
@@ -42,8 +42,8 @@ terminal            SEMICOLON;
 /* Non-terminals */
 non terminal expr_list;
 non terminal Integer expr; // used to store evaluated subexpressions
-non terminal String PROGRAMA, BODY, STATEMENT, EXP, ASIG, FUNCTION_STATEMENT, EXP_ARIT, VALUE, NUMBERS, EXP_REL, BOOL, LINE, IF_STATEMENT, LINER, TERM, FACTOR, OPER_REL, EXP_REL_LOG;
-non terminal String EXP_LOG, OPER_LOG, OPERA_LOG, DECL, DECLOC, TYPES, INV_FUNC, PARAMS, PARAMETER, INV_ARRAY, DECLARRAY;
+non terminal String PROGRAMA, BODY, STATEMENT, EXP, ASIG, FUNCTION_STATEMENT, EXP_ARIT, VALUE, NUMBERS, EXP_REL, BOOL, LINE, FOR_STATEMENT, WHILE_STATEMENT, IF_STATEMENT, ELSE_STATEMENT, LINER, TERM, FACTOR, OPER_REL, EXP_REL_LOG;
+non terminal String EXP_LOG, OPER_LOG, OPERA_LOG, DECL, DECLOC, TYPES, INV_FUNC, PARAMS, PARAMETER, INV_ARRAY, DECLARRAY_WITH_VALUES, VALUE_LIST, SWITCH_STATEMENT, CASE_LIST;
 
 /* Precedences */
 
@@ -76,8 +76,11 @@ LINE::=
 LINER::=
         ASIG
       | DECLOC
+      | FOR_STATEMENT
+      | WHILE_STATEMENT
+      | SWITCH_STATEMENT
       | IF_STATEMENT
-      | DECLARRAY
+      | DECLARRAY_WITH_VALUES
       | EXP;
 
 //===============================================================================Expresiones Aritmeticas==================================================================
@@ -161,14 +164,21 @@ PARAMETER ::= VALUE;
 
 //Invocaciones de un array
 INV_ARRAY ::= IDENTIFIER PARENTCA INTEGER_LITERAL PARENTCC;
-DECLARRAY ::= CHAR SEP IDENTIFIER PARENTCA INTEGER_LITERAL PARENTCC EQ VALUE ENDLINE;
-DECLARRAY ::= INT SEP IDENTIFIER PARENTCA INTEGER_LITERAL PARENTCC EQ VALUE ENDLINE;
+DECLARRAY_WITH_VALUES ::= CHAR SEP IDENTIFIER PARENTCA INTEGER_LITERAL PARENTCC EQ VALUE_LIST ENDLINE;
+DECLARRAY_WITH_VALUES ::= INT SEP IDENTIFIER PARENTCA INTEGER_LITERAL PARENTCC EQ VALUE_LIST ENDLINE;
+VALUE_LIST ::= VALUE COMA VALUE_LIST | VALUE;
 
 //===============================================================================Funciones End==================================================================
 
 
 //===============================================================================Estructuras de control==================================================================
 //Declaracion de IF.
-IF_STATEMENT ::= IF PARENTA EXP_REL_LOG PARENTC UNDERS LINE UNDERS {: System.out.println("if statement"); :};
+IF_STATEMENT ::= IF PARENTA EXP_REL_LOG PARENTC UNDERS LINE UNDERS ELSE_STATEMENT {: System.out.println("if statement"); :};
+ELSE_STATEMENT ::= ELSE UNDERS LINE UNDERS | {: System.out.println("else statement"); :};
+WHILE_STATEMENT ::= WHILE PARENTA EXP_REL_LOG PARENTC UNDERS LINE UNDERS {: System.out.println("WHILE statement"); :};
+FOR_STATEMENT ::= FOR IDENTIFIER IN RANGE PARENTA EXP_ARIT PARENTC UNDERS LINE UNDERS {: System.out.println("FOR statement"); :};
+SWITCH_STATEMENT ::= SWITCH PARENTA IDENTIFIER PARENTC UNDERS CASE_LIST UNDERS;
+CASE_LIST ::= CASE EXP_ARIT SEP LINE CASE_LIST | DEFAULT SEP LINE;
+
 
 //===============================================================================Estructuras de control End==================================================================
