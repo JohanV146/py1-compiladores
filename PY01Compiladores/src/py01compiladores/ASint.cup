@@ -1,9 +1,18 @@
 package py01compiladores;
 import java_cup.runtime.*;
+import java.util.HashMap; // import the HashMap class
+import java.util.List;
+import java.util.ArrayList;
+
+
 
 parser code {:
     // Connect this parser to a scanner!
     Lexer lex;
+    
+    HashMap<String, ArrayList<String>> TablaSimbolos = new HashMap<String, ArrayList<String>>();
+    String currentHash;
+    String globalHash = "globalTS";
 
     @SuppressWarnings("deprecation")
     public Parser(Lexer lex) {
@@ -18,6 +27,8 @@ parser code {:
         System.out.println("Error R de sintaxis: " +  s.value + " linea: " +  (s.left+1) +  " columna: " +  (s.right+1));
     } 
 :}
+
+
 
 /* define how to connect to the scanner! */
 //init with {: s.init(); :};
@@ -37,17 +48,18 @@ terminal            IF, ELSE, WHILE, FOR, IN, RANGE, SWITCH, CASE;
 terminal            GLOB, LOC, RETURN, PRINTF, FUNC, MAIN, PARAM, READ, DEFAULT;
 terminal            PARENTA, PARENTC, PARENTCA, PARENTCC, UNDERS;
 terminal            ENDLINE, BOOOLEANF, COMA;
-terminal            SEMICOLON;
+terminal            SEMICOLON, PM;
 
 /* Non-terminals */
 non terminal expr_list;
 non terminal Integer expr; // used to store evaluated subexpressions
 non terminal String PROGRAMA, BODY, STATEMENT, EXP, ASIG, FUNCTION_STATEMENT, EXP_ARIT, VALUE, NUMBERS, EXP_REL, BOOL, LINE, FOR_STATEMENT, WHILE_STATEMENT, IF_STATEMENT, ELSE_STATEMENT, LINER, TERM, FACTOR, OPER_REL, EXP_REL_LOG;
-non terminal String EXP_LOG, OPER_LOG, OPERA_LOG, DECL, DECLOC, TYPES, INV_FUNC, PARAMS, PARAMETER, INV_ARRAY, DECLARRAY_WITH_VALUES, VALUE_LIST, SWITCH_STATEMENT, CASE_LIST;
+non terminal String EXP_LOG, OPER_LOG, OPERA_LOG, DECL, DECLOC, TYPES, INV_FUNC, PARAMS, PARAMETER, INV_ARRAY, DECLARRAY_WITH_VALUES, VALUE_LIST, SWITCH_STATEMENT, CASE_LIST, PARAMDECL, EXP_ARIT_INTEGER, TERM_INTEGER, FACTOR_INTEGER;
+non terminal String PRINTLN, RETURN_STATEMENT, FUNC_STAT_DEF;
 
 /* Precedences */
 
-precedence left PLUS, MINUS;
+precedence left PM, PLUS, MINUS;
 precedence left TIMES;
 precedence left DIV;
 precedence left UMINUS;
@@ -56,15 +68,16 @@ precedence left UMINUS;
 /* The grammar rules */
 start with PROGRAMA;
 //Inicial.
-PROGRAMA  ::= BODY;
+PROGRAMA  ::=  {: TablaSimbolos.put(globalHash, new ArrayList<String>()); :}
+                BODY
+                {: System.out.println("Body "); :};
 
 //cuerpo del programa.
 BODY ::= BODY STATEMENT | STATEMENT;
 
 //Lineas del codigo.
 STATEMENT::= 
-      LINER
-     | FUNCTION_STATEMENT
+     FUNC_STAT_DEF
      | DECL
      | error ENDLINE
      | error UNDERS;
@@ -76,12 +89,16 @@ LINE::=
 LINER::=
         ASIG
       | DECLOC
+      | DECL
       | FOR_STATEMENT
       | WHILE_STATEMENT
       | SWITCH_STATEMENT
       | IF_STATEMENT
       | DECLARRAY_WITH_VALUES
-      | EXP;
+      | EXP
+      | PARAMDECL
+      | PRINTLN
+      | RETURN_STATEMENT;
 
 //===============================================================================Expresiones Aritmeticas==================================================================
 //Numeros
@@ -93,19 +110,47 @@ BOOL ::= TRUE | FALSE;
 EXP::= EXP_REL_LOG ENDLINE;
 
 //expresiones aritmeticas.
-EXP_ARIT    ::= EXP_ARIT    PLUS    TERM
-              | EXP_ARIT    MINUS   TERM  
+EXP_ARIT    ::= 
+              EXP_ARIT    PLUS    TERM
+              | EXP_ARIT    MINUS   TERM 
               | TERM;
 
 TERM    ::=    TERM TIMES FACTOR
             |   TERM DIV FACTOR
+            |   TERM POT FACTOR
+            |   TERM MOD FACTOR
             |   FACTOR;
 FACTOR  ::=  PARENTA EXP_ARIT PARENTC
+            | MINUS NUMBERS
             | NUMBERS
             | STRING_LITERAL
             | IDENTIFIER
+            | IDENTIFIER MINUSM
+            | IDENTIFIER PLUSP
             | INV_FUNC
             | INV_ARRAY;
+
+//expresiones aritmeticas.
+EXP_ARIT_INTEGER    ::= 
+                EXP_ARIT_INTEGER    PLUS    TERM_INTEGER
+              | EXP_ARIT_INTEGER    MINUS   TERM_INTEGER  
+              | TERM_INTEGER;
+
+TERM_INTEGER    ::=    
+                TERM_INTEGER TIMES FACTOR_INTEGER
+            |   TERM_INTEGER DIV FACTOR_INTEGER
+            |   TERM_INTEGER POT FACTOR_INTEGER
+            |   TERM_INTEGER MOD FACTOR_INTEGER
+            |   FACTOR_INTEGER;
+FACTOR_INTEGER  ::=  PARENTA EXP_ARIT_INTEGER PARENTC
+            | NUMBERS
+            | IDENTIFIER
+            | IDENTIFIER PLUSP
+            | IDENTIFIER MINUSM
+            | MINUS NUMBERS
+            | INV_FUNC
+            | INV_ARRAY;
+
 //===============================================================================Expresiones Aritmeticas End==================================================================
 
 //===============================================================================Expresiones relacionales==================================================================
@@ -114,20 +159,23 @@ EXP_REL_LOG ::= EXP_REL | EXP_LOG;
 
 EXP_REL    ::= EXP_ARIT    OPER_REL    EXP_ARIT 
             | PARENTA EXP_REL PARENTC
+            | NOT PARENTA EXP_REL PARENTC
             | BOOL;
 
 //Operador logico.
 EXP_LOG ::= OPER_LOG 
           | EXP_REL  OPERA_LOG EXP_REL_LOG
           | PARENTA EXP_REL  OPERA_LOG EXP_REL_LOG PARENTC //parentesis para las expresiones.
+          | NOT PARENTA EXP_REL  OPERA_LOG EXP_REL_LOG PARENTC //parentesis para las expresiones.
           | IDENTIFIER OPERA_LOG EXP_REL_LOG
-          | PARENTA IDENTIFIER  OPERA_LOG EXP_REL_LOG PARENTC; //parentesis para los identificadores.
+          | PARENTA IDENTIFIER  OPERA_LOG EXP_REL_LOG PARENTC //parentesis para los identificadores.
+          | NOT PARENTA IDENTIFIER  OPERA_LOG EXP_REL_LOG PARENTC; //parentesis para los identificadores.
 
 //operando logico.
 OPER_LOG ::= EXP_ARIT;
 
 //Operadores relacionales.
-OPER_REL ::= GREATERT | GREATERE |  LOWERT | LOWERE | EQEQ;
+OPER_REL ::= GREATERT | GREATERE |  LOWERT | LOWERE | EQEQ | NOTEQUALS;
 OPERA_LOG ::= DISJUNTION | CONJUNTION;
 //===============================================================================Expresiones Relacionales End==================================================================
 
@@ -150,8 +198,20 @@ VALUE::= EXP_REL_LOG;
 
 //===============================================================================Funcion==================================================================
 //Declaracion de funciones.
-FUNCTION_STATEMENT::= FUNC SEP INT SEP MAIN UNDERS LINE UNDERS {: System.out.println("Main"); :};
-FUNCTION_STATEMENT::= FUNC SEP INT SEP IDENTIFIER UNDERS LINE UNDERS {: System.out.println("declaracion de funcion"); :};
+FUNCTION_STATEMENT::= FUNC SEP INT SEP MAIN UNDERS LINE  {: System.out.println("Main"); :};
+
+FUNCTION_STATEMENT::= FUNC SEP INT SEP IDENTIFIER UNDERS LINE   {: System.out.println("declaracion de funcion"); :};
+
+FUNCTION_STATEMENT::= FUNC SEP FLOAT SEP IDENTIFIER UNDERS LINE  {: System.out.println("declaracion de funcion"); :};
+
+FUNCTION_STATEMENT::= FUNC SEP BOOOLEANF SEP IDENTIFIER UNDERS LINE {: System.out.println("declaracion de funcion"); :};
+
+FUNCTION_STATEMENT::= FUNC SEP CHAR SEP IDENTIFIER UNDERS LINE {: System.out.println("declaracion de funcion"); :};
+
+FUNCTION_STATEMENT::= FUNC SEP STRING SEP IDENTIFIER UNDERS  {: System.out.println("declaracion de funcion"); :};
+
+FUNC_STAT_DEF ::= FUNCTION_STATEMENT UNDERS;
+
 
 
 INV_FUNC ::= IDENTIFIER PARENTA PARENTC {: System.out.println("Invocacion de funcion sin parametros."); :};
@@ -162,11 +222,18 @@ PARAMS ::= PARAMETER;
 
 PARAMETER ::= VALUE;
 
+PARAMDECL ::= PARAM SEP TYPES SEP IDENTIFIER ENDLINE;
+
 //Invocaciones de un array
 INV_ARRAY ::= IDENTIFIER PARENTCA INTEGER_LITERAL PARENTCC;
 DECLARRAY_WITH_VALUES ::= CHAR SEP IDENTIFIER PARENTCA INTEGER_LITERAL PARENTCC EQ VALUE_LIST ENDLINE;
 DECLARRAY_WITH_VALUES ::= INT SEP IDENTIFIER PARENTCA INTEGER_LITERAL PARENTCC EQ VALUE_LIST ENDLINE;
 VALUE_LIST ::= VALUE COMA VALUE_LIST | VALUE;
+
+
+PRINTLN ::= PRINTF PARENTA PARENTC ENDLINE;
+PRINTLN ::= PRINTF PARENTA STRING_LITERAL PARENTC ENDLINE;
+PRINTLN ::= PRINTF PARENTA IDENTIFIER PARENTC ENDLINE;
 
 //===============================================================================Funciones End==================================================================
 
@@ -174,11 +241,29 @@ VALUE_LIST ::= VALUE COMA VALUE_LIST | VALUE;
 //===============================================================================Estructuras de control==================================================================
 //Declaracion de IF.
 IF_STATEMENT ::= IF PARENTA EXP_REL_LOG PARENTC UNDERS LINE UNDERS ELSE_STATEMENT {: System.out.println("if statement"); :};
+
 ELSE_STATEMENT ::= ELSE UNDERS LINE UNDERS | {: System.out.println("else statement"); :};
+
 WHILE_STATEMENT ::= WHILE PARENTA EXP_REL_LOG PARENTC UNDERS LINE UNDERS {: System.out.println("WHILE statement"); :};
-FOR_STATEMENT ::= FOR IDENTIFIER IN RANGE PARENTA EXP_ARIT PARENTC UNDERS LINE UNDERS {: System.out.println("FOR statement"); :};
+
+FOR_STATEMENT ::= FOR SEP IDENTIFIER SEP IN SEP RANGE PARENTA EXP_ARIT_INTEGER PARENTC UNDERS LINE UNDERS {: System.out.println("FOR statement"); :};
+FOR_STATEMENT ::= FOR SEP IDENTIFIER SEP IN SEP RANGE PARENTA EXP_ARIT_INTEGER COMA EXP_ARIT_INTEGER PARENTC UNDERS LINE UNDERS {: System.out.println("FOR statement"); :};
+FOR_STATEMENT ::= FOR SEP IDENTIFIER SEP IN SEP RANGE PARENTA EXP_ARIT_INTEGER COMA EXP_ARIT_INTEGER COMA EXP_ARIT_INTEGER PARENTC UNDERS LINE UNDERS {: System.out.println("FOR statement"); :};
+
 SWITCH_STATEMENT ::= SWITCH PARENTA IDENTIFIER PARENTC UNDERS CASE_LIST UNDERS;
+
 CASE_LIST ::= CASE EXP_ARIT SEP LINE CASE_LIST | DEFAULT SEP LINE;
 
 
+
 //===============================================================================Estructuras de control End==================================================================
+
+//===============================================================================Return==================================================================
+RETURN_STATEMENT ::=  RETURN ENDLINE;
+RETURN_STATEMENT ::=  RETURN SEP VALUE ENDLINE;
+
+//===============================================================================Return==================================================================
+
+
+
+

@@ -12,6 +12,7 @@ public class sym {
   public static final int MINUSM = 6;
   public static final int STRING_LITERAL = 17;
   public static final int POT = 8;
+  public static final int PM = 69;
   public static final int BOOOLEANF = 66;
   public static final int CHAR = 37;
   public static final int UMINUS = 11;
@@ -146,7 +147,8 @@ public class sym {
   "ENDLINE",
   "BOOOLEANF",
   "COMA",
-  "SEMICOLON"
+  "SEMICOLON",
+  "PM"
   };
 }
 

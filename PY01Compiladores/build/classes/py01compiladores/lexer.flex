@@ -41,11 +41,11 @@ DocumentationComment = "/**" {CommentContent} "*"+ "/"
 CommentContent       = ( [^*] | \*+ [^/*] )*
 
 Identifier = [a-zA-Z]([a-zA-Z0-9])* 
-
 DecIntegerLiteral = 0 | [1-9][0-9]*
 /*================================Lexemas propios================================*/
 flotante = ([0-9]*[.])?[0-9]+
 charc = [a-zA-Z]
+
 
 /*=========================================================Lexemas propios=============================================================================*/
 %state STRING
@@ -98,7 +98,7 @@ charc = [a-zA-Z]
 <YYINITIAL> "glob"               { return symbol(sym.GLOB, yyline, yycolumn, yytext()); }
 <YYINITIAL> "loc"                { return symbol(sym.LOC, yyline, yycolumn, yytext()); }
 <YYINITIAL> "return"             { return symbol(sym.RETURN, yyline, yycolumn, yytext()); }
-<YYINITIAL> "printf"             { return symbol(sym.PRINTF, yyline, yycolumn, yytext()); }
+<YYINITIAL> "print"             { return symbol(sym.PRINTF, yyline, yycolumn, yytext()); }
 <YYINITIAL> "func"               { return symbol(sym.FUNC, yyline, yycolumn, yytext()); }
 <YYINITIAL> "main"               { return symbol(sym.MAIN, yyline, yycolumn, yytext()); }
 <YYINITIAL> "param"              { return symbol(sym.PARAM, yyline, yycolumn, yytext()); }
@@ -106,6 +106,7 @@ charc = [a-zA-Z]
 <YYINITIAL> "default"            { return symbol(sym.DEFAULT, yyline, yycolumn, yytext()); }
 <YYINITIAL> "_"                  { return symbol(sym.UNDERS, yyline, yycolumn, yytext()); }
 <YYINITIAL> ","                  { return symbol(sym.COMA, yyline, yycolumn, yytext()); }
+
 
 /*================================reglas de lexematizacion propias================================*/
 
@@ -127,6 +128,7 @@ charc = [a-zA-Z]
   "/"                            { return symbol(sym.DIV, yyline, yycolumn, yytext()); }
   "^"                            { return symbol(sym.POT, yyline, yycolumn, yytext()); }
   "%"                            { return symbol(sym.MOD, yyline, yycolumn, yytext()); }
+
   
 
   /* comments */
@@ -135,6 +137,7 @@ charc = [a-zA-Z]
   /* whitespace */
   
 }
+
 
 <STRING> {
   \"                             { yybegin(YYINITIAL); 

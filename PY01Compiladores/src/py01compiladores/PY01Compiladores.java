@@ -5,9 +5,11 @@
 package py01compiladores;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -21,6 +23,10 @@ import java_cup.runtime.Symbol;
 import jflex.exceptions.SilentExit;
 import static jflex.logging.Out.println;
 
+import java.util.HashMap; // import the HashMap class
+import java.util.List;
+import java.util.ArrayList;
+
 /**
  *
  * @author truez
@@ -31,7 +37,8 @@ public class PY01Compiladores {
      * @throws jflex.exceptions.SilentExit
      * @throws java.lang.Exception
      */
-    
+    HashMap<String, List<String>> TablaSimbolos = new HashMap<>(); 
+     
     public static void generarLexer(String path) throws SilentExit {
         String[] strArr =  {path};
         jflex.Main.generate(strArr);
@@ -41,19 +48,20 @@ public class PY01Compiladores {
         String[] strArr = { "-parser", "Parser", path };
         java_cup.Main.main(strArr);
     }
-    
-    public static void test1(String ruta) throws FileNotFoundException, IOException, Exception {
+
+    public static String LexerToString(String ruta) throws FileNotFoundException, IOException, Exception {
         try (Reader reader = new BufferedReader(new FileReader(ruta))) {
             Lexer lex = new Lexer(reader);
             int i = 0;
             Symbol token;
+            String document = "";
             while (true) {
                 token = lex.next_token();
                 if (token.sym != 0) {
-                    System.out.println("Token: " + token.sym + " " + (token.value == null ? lex.yytext() : token.value.toString()));
+                    document += "Token: " + token.sym + " " + (token.value == null ? lex.yytext() : token.value.toString()) + "\n";
                 } else {
-                    System.out.println("Cantidad de lexemas encontrados: " + i);
-                    return;
+                    document += "Cantidad de lexemas encontrados: " + i;
+                    return document;
                 }
                 i++;
             }
@@ -61,11 +69,28 @@ public class PY01Compiladores {
     }
 
     
-    public static void test2(String ruta) throws IOException, Exception {
+    public static void runParser(String ruta) throws IOException, Exception {
         try (Reader reader = new BufferedReader(new FileReader(ruta))) {
             Lexer lex = new Lexer(reader);  // Crea un analizador léxico para el archivo
             Parser myParser = new Parser(lex);  // Crea un analizador sintáctico y le pasa el analizador léxico
             myParser.parse();  // Parsea el contenido del archivo
+        }
+    }
+    
+    public static void saveLexems(String content, String ruta) throws IOException, Exception {
+        try {
+            // Crear un objeto FileWriter para escribir en el archivo
+            FileWriter archivoEscritura = new FileWriter(ruta);
+            // Crear un objeto BufferedWriter para escribir texto en el archivo
+            BufferedWriter escritor = new BufferedWriter(archivoEscritura);
+            // Escribir la cadena en el archivo
+            escritor.write(content);
+            // Cerrar el BufferedWriter para liberar recursos
+            escritor.close();
+
+            System.out.println("Cadena guardada en el archivo correctamente.");
+        } catch (IOException e) {
+            System.err.println("Error al guardar la cadena en el archivo: " + e.getMessage());
         }
     }
     
@@ -97,7 +122,13 @@ public class PY01Compiladores {
         Files.move(Paths.get(symLocation), Paths.get(symd1), StandardCopyOption.REPLACE_EXISTING);
         Files.move(Paths.get(ParserLocation), Paths.get(pard1), StandardCopyOption.REPLACE_EXISTING);
         
-        test1(path3);
-        test2(path3);  
+        
+        String lexemas = LexerToString(path3);
+        //System.out.print(lexemas);
+        String path4 = currentDirectory + "\\src\\py01compiladores\\lexemas.txt";
+        saveLexems(lexemas, path4);
+        
+        runParser(path3);  
+        
     }
 }
