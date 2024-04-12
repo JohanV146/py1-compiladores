@@ -127,7 +127,6 @@ public class PY01Compiladores {
         //System.out.print(lexemas);
         String path4 = currentDirectory + "\\src\\py01compiladores\\lexemas.txt";
         saveLexems(lexemas, path4);
-        
         runParser(path3);  
         
     }

@@ -33,6 +33,7 @@ glob:float:pi;/*semantico*/
 func:float:func1 _
 	param:char:x22;
 	param:char:x22; //semantico borrar parametro
+        param:int:x22; //semantico borrar parametro
 	loc:char:x22; /*semantico x22*/
 	if(!(x22<=45)&&var>5.6)_ //semantico x22, var
 		glob:int:y;
@@ -72,6 +73,8 @@ Comentario 1
 	loc:float:fl1=56.6; //semantico fl1
 	loc:int:in1=fl1-- - -14/in1+++7-15; //semantico fl1, in1
 	loc:float:fl2=3.7^fl1+(45.6%76); //semantico literal 76
+        break;
+        read(randalh);
 	
 //comentario 2
 	arr = 10 - arr[67] * func1 (hola, true, "hola mundo", 4.5, "a"); //semantico func1, retorno func1

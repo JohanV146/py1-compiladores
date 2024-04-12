@@ -253,6 +253,12 @@ Token: 37 char
 Token: 32 :
 Token: 16 x22
 Token: 65 ;
+Token: 57 param
+Token: 32 :
+Token: 35 int
+Token: 32 :
+Token: 16 x22
+Token: 65 ;
 Token: 52 loc
 Token: 32 :
 Token: 37 char
@@ -457,6 +463,13 @@ Token: 9 %
 Token: 14 76
 Token: 61 )
 Token: 65 ;
+Token: 19 break
+Token: 65 ;
+Token: 58 read
+Token: 60 (
+Token: 16 randalh
+Token: 61 )
+Token: 65 ;
 Token: 16 arr
 Token: 22 =
 Token: 14 10
@@ -539,4 +552,4 @@ Token: 32 :
 Token: 16 bl1
 Token: 65 ;
 Token: 64 _
-Cantidad de lexemas encontrados: 541
+Cantidad de lexemas encontrados: 554

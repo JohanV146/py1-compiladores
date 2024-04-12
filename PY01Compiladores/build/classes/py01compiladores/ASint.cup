@@ -3,8 +3,14 @@ import java_cup.runtime.*;
 import java.util.HashMap; // import the HashMap class
 import java.util.List;
 import java.util.ArrayList;
-
-
+import java.io.IOException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 parser code {:
     // Connect this parser to a scanner!
@@ -26,6 +32,38 @@ parser code {:
     public void unrecovered_syntax_error(Symbol s) {
         System.out.println("Error R de sintaxis: " +  s.value + " linea: " +  (s.left+1) +  " columna: " +  (s.right+1));
     } 
+
+    
+    public void TablaSimbolosToString () throws Exception {
+        String text = "";
+        for (String key: TablaSimbolos.keySet()) {
+            text +=  "Tabla de simbolo : " + key;
+            text +=  " : valores: " ;
+            for (String item : TablaSimbolos.get(key)) {
+                text += item +  "\n"; 
+            }
+            text += "\n";
+        }
+        Path currentPath = Paths.get("");
+        Path absolutePath = currentPath.toAbsolutePath();
+        String currentDirectory = absolutePath.toString(); 
+        String path4 = currentDirectory + "\\src\\py01compiladores\\tablaSimbolos.txt";
+        //System.out.println(text);
+        saveTablaSimbolos(text, path4);
+
+    }
+    
+    public static void saveTablaSimbolos(String content, String ruta) throws IOException, Exception {
+        try {
+            FileWriter archivoEscritura = new FileWriter(ruta);
+            BufferedWriter escritor = new BufferedWriter(archivoEscritura);
+            escritor.write(content);
+            escritor.close();
+            System.out.println("Cadena guardada en el archivo correctamente.");
+        } catch (IOException e) {
+            System.err.println("Error al guardar la cadena en el archivo: " + e.getMessage());
+        }
+    }
 :}
 
 
@@ -55,7 +93,7 @@ non terminal expr_list;
 non terminal Integer expr; // used to store evaluated subexpressions
 non terminal String PROGRAMA, BODY, STATEMENT, EXP, ASIG, FUNCTION_STATEMENT, EXP_ARIT, VALUE, NUMBERS, EXP_REL, BOOL, LINE, FOR_STATEMENT, WHILE_STATEMENT, IF_STATEMENT, ELSE_STATEMENT, LINER, TERM, FACTOR, OPER_REL, EXP_REL_LOG;
 non terminal String EXP_LOG, OPER_LOG, OPERA_LOG, DECL, DECLOC, TYPES, INV_FUNC, PARAMS, PARAMETER, INV_ARRAY, DECLARRAY_WITH_VALUES, VALUE_LIST, SWITCH_STATEMENT, CASE_LIST, PARAMDECL, EXP_ARIT_INTEGER, TERM_INTEGER, FACTOR_INTEGER;
-non terminal String PRINTLN, RETURN_STATEMENT, FUNC_STAT_DEF;
+non terminal String PRINTLN, RETURN_STATEMENT, FUNC_STAT_DEF, BREAK_STATEMENT, INPUT_STATEMENT;
 
 /* Precedences */
 
@@ -70,7 +108,7 @@ start with PROGRAMA;
 //Inicial.
 PROGRAMA  ::=  {: TablaSimbolos.put(globalHash, new ArrayList<String>()); :}
                 BODY
-                {: System.out.println("Body "); :};
+                {: TablaSimbolosToString(); :};
 
 //cuerpo del programa.
 BODY ::= BODY STATEMENT | STATEMENT;
@@ -98,7 +136,9 @@ LINER::=
       | EXP
       | PARAMDECL
       | PRINTLN
-      | RETURN_STATEMENT;
+      | RETURN_STATEMENT
+      | BREAK_STATEMENT
+      | INPUT_STATEMENT;
 
 //===============================================================================Expresiones Aritmeticas==================================================================
 //Numeros
@@ -181,15 +221,21 @@ OPERA_LOG ::= DISJUNTION | CONJUNTION;
 
 //===============================================================================Asignaciones y declaraciones==================================================================
 //Asignacion de valores a una variable.
-ASIG::= IDENTIFIER EQ VALUE ENDLINE {: System.out.println("Asignacion "); :};
+ASIG::= IDENTIFIER EQ VALUE ENDLINE;
 
-DECL::= GLOB SEP TYPES SEP IDENTIFIER ENDLINE {: System.out.println("Declaracion de variables globales "); :};
-DECL::= GLOB SEP TYPES SEP IDENTIFIER EQ VALUE ENDLINE {: System.out.println("Declaracion de variables globales con asig"); :};
+DECL::= GLOB SEP TYPES:tglob SEP IDENTIFIER:ID ENDLINE {: TablaSimbolos.get(globalHash).add("variableGLob: " + ID.toString() + ":" + tglob.toString()); :};
 
-DECLOC::= LOC SEP TYPES SEP IDENTIFIER ENDLINE {: System.out.println("Declaracion de variables LOCALES "); :};
-DECLOC::= LOC SEP TYPES SEP IDENTIFIER EQ VALUE ENDLINE {: System.out.println("Declaracion de variables LOCALES con asig"); :};
+DECL::= GLOB SEP TYPES:tglob SEP IDENTIFIER:ID EQ VALUE ENDLINE {: TablaSimbolos.get(globalHash).add("variableGLob: " + ID.toString() + ":" + tglob.toString()); :};
 
-TYPES::= CHAR | FLOAT | STRING | INT | BOOOLEANF;
+DECLOC::= LOC SEP TYPES:tloc SEP IDENTIFIER:ID ENDLINE {: TablaSimbolos.get(currentHash).add("variableLoc: " + ID.toString() + ":" + tloc.toString()); :};
+
+DECLOC::= LOC SEP TYPES:tloc SEP IDENTIFIER:ID EQ VALUE ENDLINE {: TablaSimbolos.get(currentHash).add("variableLoc: " + ID.toString() + ":" + tloc.toString()); :};
+
+TYPES::=    CHAR {: RESULT = "char"; :} 
+            | FLOAT {: RESULT = "float"; :}
+            | STRING {: RESULT = "String"; :}
+            | INT {: RESULT = "int"; :}
+            | BOOOLEANF {: RESULT = "bool"; :};
 
 //posibles valores que puede tener una asignacion.
 VALUE::= EXP_REL_LOG;
@@ -198,36 +244,73 @@ VALUE::= EXP_REL_LOG;
 
 //===============================================================================Funcion==================================================================
 //Declaracion de funciones.
-FUNCTION_STATEMENT::= FUNC SEP INT SEP MAIN UNDERS LINE  {: System.out.println("Main"); :};
+FUNCTION_STATEMENT::= FUNC SEP INT SEP MAIN {:
+                                                         String tipo;
+                                                         tipo = "tipo:Main:int";
+                                                         ArrayList<String> fun = new ArrayList<String>();
+                                                         currentHash = "main";
+                                                         fun.add(tipo);
+                                                         TablaSimbolos.put(currentHash, fun);
+                                            :};
 
-FUNCTION_STATEMENT::= FUNC SEP INT SEP IDENTIFIER UNDERS LINE   {: System.out.println("declaracion de funcion"); :};
+FUNCTION_STATEMENT::= FUNC SEP INT SEP IDENTIFIER:ID  {: String tipo;
+                                                         tipo = "tipo:func:int";
+                                                         ArrayList<String> fun = new ArrayList<String>();
+                                                         currentHash = ID.toString();
+                                                         fun.add(tipo);
+                                                         TablaSimbolos.put(currentHash, fun);
+                                                    :};
 
-FUNCTION_STATEMENT::= FUNC SEP FLOAT SEP IDENTIFIER UNDERS LINE  {: System.out.println("declaracion de funcion"); :};
+FUNCTION_STATEMENT::= FUNC SEP FLOAT SEP IDENTIFIER:ID {: String tipo;
+                                                         tipo = "tipo:func:float";
+                                                         ArrayList<String> fun = new ArrayList<String>();
+                                                         currentHash = ID.toString();
+                                                         fun.add(tipo);
+                                                         TablaSimbolos.put(currentHash, fun);
+                                                    :};
 
-FUNCTION_STATEMENT::= FUNC SEP BOOOLEANF SEP IDENTIFIER UNDERS LINE {: System.out.println("declaracion de funcion"); :};
+FUNCTION_STATEMENT::= FUNC SEP BOOOLEANF SEP IDENTIFIER:ID  {: String tipo;
+                                                         tipo = "tipo:func:bool";
+                                                         ArrayList<String> fun = new ArrayList<String>();
+                                                         currentHash = ID.toString();
+                                                         fun.add(tipo);
+                                                         TablaSimbolos.put(currentHash, fun);
+                                                    :};
 
-FUNCTION_STATEMENT::= FUNC SEP CHAR SEP IDENTIFIER UNDERS LINE {: System.out.println("declaracion de funcion"); :};
+FUNCTION_STATEMENT::= FUNC SEP CHAR SEP IDENTIFIER:ID  {: String tipo;
+                                                         tipo = "tipo:func:char";
+                                                         ArrayList<String> fun = new ArrayList<String>();
+                                                         currentHash = ID.toString();
+                                                         fun.add(tipo);
+                                                         TablaSimbolos.put(currentHash, fun);
+                                                    :};
 
-FUNCTION_STATEMENT::= FUNC SEP STRING SEP IDENTIFIER UNDERS  {: System.out.println("declaracion de funcion"); :};
+FUNCTION_STATEMENT::= FUNC SEP STRING SEP IDENTIFIER:ID  {: String tipo;
+                                                         tipo = "tipo:func:String";
+                                                         ArrayList<String> fun = new ArrayList<String>();
+                                                         currentHash = ID.toString();
+                                                         fun.add(tipo);
+                                                         TablaSimbolos.put(currentHash, fun);
+                                                    :};
 
-FUNC_STAT_DEF ::= FUNCTION_STATEMENT UNDERS;
+FUNC_STAT_DEF ::= FUNCTION_STATEMENT UNDERS LINE UNDERS;
 
 
 
-INV_FUNC ::= IDENTIFIER PARENTA PARENTC {: System.out.println("Invocacion de funcion sin parametros."); :};
-INV_FUNC ::= IDENTIFIER PARENTA PARAMS PARENTC {: System.out.println("Invocacion de funcion con parametros."); :};
+INV_FUNC ::= IDENTIFIER PARENTA PARENTC;
+INV_FUNC ::= IDENTIFIER PARENTA PARAMS PARENTC;
 
 PARAMS ::= PARAMETER COMA PARAMS;
 PARAMS ::= PARAMETER;
 
 PARAMETER ::= VALUE;
 
-PARAMDECL ::= PARAM SEP TYPES SEP IDENTIFIER ENDLINE;
+PARAMDECL ::= PARAM SEP TYPES:tparam SEP IDENTIFIER:ID ENDLINE {: TablaSimbolos.get(currentHash).add("parametro : "+ ID.toString() + ":" + tparam.toString()); :};
 
 //Invocaciones de un array
 INV_ARRAY ::= IDENTIFIER PARENTCA INTEGER_LITERAL PARENTCC;
-DECLARRAY_WITH_VALUES ::= CHAR SEP IDENTIFIER PARENTCA INTEGER_LITERAL PARENTCC EQ VALUE_LIST ENDLINE;
-DECLARRAY_WITH_VALUES ::= INT SEP IDENTIFIER PARENTCA INTEGER_LITERAL PARENTCC EQ VALUE_LIST ENDLINE;
+DECLARRAY_WITH_VALUES ::= CHAR SEP IDENTIFIER:ID PARENTCA INTEGER_LITERAL PARENTCC EQ VALUE_LIST ENDLINE  {: TablaSimbolos.get(currentHash).add("array : "+ ID.toString() + ":" + "char"); :};
+DECLARRAY_WITH_VALUES ::= INT SEP IDENTIFIER:ID PARENTCA INTEGER_LITERAL PARENTCC EQ VALUE_LIST ENDLINE  {: TablaSimbolos.get(currentHash).add("array : "+ ID.toString() + ":" + "int"); :};
 VALUE_LIST ::= VALUE COMA VALUE_LIST | VALUE;
 
 
@@ -235,20 +318,23 @@ PRINTLN ::= PRINTF PARENTA PARENTC ENDLINE;
 PRINTLN ::= PRINTF PARENTA STRING_LITERAL PARENTC ENDLINE;
 PRINTLN ::= PRINTF PARENTA IDENTIFIER PARENTC ENDLINE;
 
+INPUT_STATEMENT ::= READ PARENTA IDENTIFIER PARENTC ENDLINE; 
+
+
 //===============================================================================Funciones End==================================================================
 
 
 //===============================================================================Estructuras de control==================================================================
 //Declaracion de IF.
-IF_STATEMENT ::= IF PARENTA EXP_REL_LOG PARENTC UNDERS LINE UNDERS ELSE_STATEMENT {: System.out.println("if statement"); :};
+IF_STATEMENT ::= IF PARENTA EXP_REL_LOG PARENTC UNDERS LINE UNDERS ELSE_STATEMENT;
 
-ELSE_STATEMENT ::= ELSE UNDERS LINE UNDERS | {: System.out.println("else statement"); :};
+ELSE_STATEMENT ::= ELSE UNDERS LINE UNDERS | ;
 
-WHILE_STATEMENT ::= WHILE PARENTA EXP_REL_LOG PARENTC UNDERS LINE UNDERS {: System.out.println("WHILE statement"); :};
+WHILE_STATEMENT ::= WHILE PARENTA EXP_REL_LOG PARENTC UNDERS LINE UNDERS;
 
-FOR_STATEMENT ::= FOR SEP IDENTIFIER SEP IN SEP RANGE PARENTA EXP_ARIT_INTEGER PARENTC UNDERS LINE UNDERS {: System.out.println("FOR statement"); :};
-FOR_STATEMENT ::= FOR SEP IDENTIFIER SEP IN SEP RANGE PARENTA EXP_ARIT_INTEGER COMA EXP_ARIT_INTEGER PARENTC UNDERS LINE UNDERS {: System.out.println("FOR statement"); :};
-FOR_STATEMENT ::= FOR SEP IDENTIFIER SEP IN SEP RANGE PARENTA EXP_ARIT_INTEGER COMA EXP_ARIT_INTEGER COMA EXP_ARIT_INTEGER PARENTC UNDERS LINE UNDERS {: System.out.println("FOR statement"); :};
+FOR_STATEMENT ::= FOR SEP IDENTIFIER SEP IN SEP RANGE PARENTA EXP_ARIT_INTEGER PARENTC UNDERS LINE UNDERS;
+FOR_STATEMENT ::= FOR SEP IDENTIFIER SEP IN SEP RANGE PARENTA EXP_ARIT_INTEGER COMA EXP_ARIT_INTEGER PARENTC UNDERS LINE UNDERS;
+FOR_STATEMENT ::= FOR SEP IDENTIFIER SEP IN SEP RANGE PARENTA EXP_ARIT_INTEGER COMA EXP_ARIT_INTEGER COMA EXP_ARIT_INTEGER PARENTC UNDERS LINE UNDERS;
 
 SWITCH_STATEMENT ::= SWITCH PARENTA IDENTIFIER PARENTC UNDERS CASE_LIST UNDERS;
 
@@ -261,6 +347,9 @@ CASE_LIST ::= CASE EXP_ARIT SEP LINE CASE_LIST | DEFAULT SEP LINE;
 //===============================================================================Return==================================================================
 RETURN_STATEMENT ::=  RETURN ENDLINE;
 RETURN_STATEMENT ::=  RETURN SEP VALUE ENDLINE;
+
+BREAK_STATEMENT ::=  BREAK ENDLINE;
+
 
 //===============================================================================Return==================================================================
 
