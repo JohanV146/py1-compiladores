@@ -2,13 +2,14 @@ glob:char:pi;glob:int:pi;/*semantico*/
 glob:bool:pi;/*semantico*/
 glob:string:pi;/*semantico*/
 glob:char:pi;
-glob:int:pi = "d";
+glob:int:pi = 'HOLA';
 glob:bool:pi = true;
 glob:string:pi = "dxcx";
 glob:int:pi = (randall || eandal && randall && (5+6 >6));
 
 
 func:int:main_ 
+                loc:char:miChar='!';
                 loc:string:str1="Mi string 1";
                 loc:float:fl1;
                 loc:float:fl1=56.6; //semantico fl1
@@ -17,12 +18,14 @@ func:int:main_
                 cos = 5 < 7;
                 if(x22<=45&&var>5.6)_cos = 5 < 7;_
                 if(miFunc(randall, "a", randall[5]))_cos = 5 < 7;_ else _ cos = 12; _
-                char:hola[12] = johan, vargas;
+                loc:char:hola[12];
+                for:i:in:range(10,20,30)_
+                    println(i);
+                _
                 return;
 _
 func:int:fun1_ cos = "df"; return; _
 func:int:fun3_ cos = "df"; return;_
-
 
 glob:char:pi;
 glob:int:pi;/*semantico*/
@@ -39,10 +42,11 @@ func:float:func1 _
 		glob:int:y;
 		x22=10;
 		loc:char:ch33="";
-                return : bl1; //semantico
+                return; //semantico
 	_else_
 		loc:int:y;//no error o no???
 		loc:string:str2="sdff";
+                break;
 	_
         print(i);
 	for:i:in:range(5)_ print(i); _
@@ -53,7 +57,26 @@ _
 func:bool:func2_
         param:char:x22;
         print(i);
-	return:-5.6; //generar error con -5.6 y con i1
+        while (!(x22<=45)&&var>5.6) _
+            // Cuerpo del bucle
+            println("El bucle 'while' está en ejecución.");
+
+            // Modificar la condición de alguna manera para que el bucle termine eventualmente
+            loc:bool:condition = pi; // Por ejemplo, establecer la condición como falsa para salir del bucle
+            return: hola;
+        _
+        switch(x) _
+            case 1:
+                // código para caso 1
+                break;
+            case 2:
+                // código para caso 2
+                break;
+            default:
+                // código para el caso predeterminado
+        _
+
+	return: -(-5.9);
 _
 
 
@@ -74,7 +97,7 @@ Comentario 1
 	loc:int:in1=fl1-- - -14/in1+++7-15; //semantico fl1, in1
 	loc:float:fl2=3.7^fl1+(45.6%76); //semantico literal 76
         break;
-        read(randalh);
+        read(randal);
 	
 //comentario 2
 	arr = 10 - arr[67] * func1 (hola, true, "hola mundo", 4.5, "a"); //semantico func1, retorno func1
@@ -86,6 +109,3 @@ Comentario 1
         randall++;
 	return : bl1; //semantico
 _
-
-
-

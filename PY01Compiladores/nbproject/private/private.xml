@@ -5,12 +5,12 @@
             <url>src/py01compiladores/ASint.cup</url>
             <bookmark id="1">
                 <name/>
-                <line>109</line>
+                <line>105</line>
                 <key/>
             </bookmark>
             <bookmark id="2">
                 <name/>
-                <line>119</line>
+                <line>115</line>
                 <key/>
             </bookmark>
         </file>
@@ -20,6 +20,7 @@
             <file>file:/C:/Users/johan/OneDrive/Documentos/GitHub/py1-compiladores/PY01Compiladores/src/py01compiladores/test.txt</file>
             <file>file:/C:/Users/johan/OneDrive/Documentos/GitHub/py1-compiladores/PY01Compiladores/src/py01compiladores/ASint.cup</file>
             <file>file:/C:/Users/johan/OneDrive/Documentos/GitHub/py1-compiladores/PY01Compiladores/src/py01compiladores/lexer.flex</file>
+            <file>file:/C:/Users/johan/OneDrive/Documentos/GitHub/py1-compiladores/PY01Compiladores/src/py01compiladores/PY01Compiladores.java</file>
             <file>file:/C:/Users/johan/OneDrive/Documentos/GitHub/py1-compiladores/PY01Compiladores/src/py01compiladores/sym.java</file>
         </group>
     </open-files>

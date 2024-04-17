@@ -44,24 +44,21 @@ Identifier = [a-zA-Z]([a-zA-Z0-9])*
 DecIntegerLiteral = 0 | [1-9][0-9]*
 /*================================Lexemas propios================================*/
 flotante = ([0-9]*[.])?[0-9]+
-charc = [a-zA-Z]
 
 
 /*=========================================================Lexemas propios=============================================================================*/
 %state STRING
+%state STRING_SINGLE
 
 %%
 
 /* keywords */
 <YYINITIAL> {WhiteSpace}         { /* ignore */ }
 <YYINITIAL> "+"                  { return symbol(sym.PLUS, yyline, yycolumn, yytext()); }
-<YYINITIAL> "abstract"           { return symbol(sym.ABSTRACT, yyline, yycolumn, yytext()); }
-<YYINITIAL> "boolean"            { return symbol(sym.BOOLEAN, yyline, yycolumn, yytext()); }
 <YYINITIAL> "break"              { return symbol(sym.BREAK, yyline, yycolumn, yytext()); }
 <YYINITIAL> "*"                  { return symbol(sym.TIMES, yyline, yycolumn, yytext()); }
 
 /*================================reglas de lexematizacion propias================================*/
-<YYINITIAL> "\."                 { return symbol(sym.DOT, yyline, yycolumn, yytext()); }
 <YYINITIAL> {DecIntegerLiteral}  { return symbol(sym.INTEGER_LITERAL, yyline, yycolumn, yytext()); }
 <YYINITIAL> {flotante}           { return symbol(sym.FLOTANTE, yyline, yycolumn, yytext()); }
 <YYINITIAL> "bool"               { return symbol(sym.BOOOLEANF, yyline, yycolumn, yytext()); }
@@ -77,8 +74,7 @@ charc = [a-zA-Z]
 <YYINITIAL> ";"                  { return symbol(sym.ENDLINE, yyline, yycolumn, yytext()); }
 <YYINITIAL> "float"              { return symbol(sym.FLOAT, yyline, yycolumn, yytext()); }
 <YYINITIAL> "char"               { return symbol(sym.CHAR, yyline, yycolumn, yytext()); }
-<YYINITIAL> "string"             { return symbol(sym.STRING, yyline, yycolumn, yytext()); }
-<YYINITIAL> "array"              { return symbol(sym.ARRAY, yyline, yycolumn, yytext()); }
+<YYINITIAL> "string"             { return symbol(sym.STRINGC, yyline, yycolumn, yytext()); }
 <YYINITIAL> "while"              { return symbol(sym.WHILE, yyline, yycolumn, yytext()); }
 <YYINITIAL> "switch"              { return symbol(sym.SWITCH, yyline, yycolumn, yytext()); }
 <YYINITIAL> "case"               { return symbol(sym.CASE, yyline, yycolumn, yytext()); }
@@ -94,7 +90,6 @@ charc = [a-zA-Z]
 <YYINITIAL> "&&"                  { return symbol(sym.CONJUNTION, yyline, yycolumn, yytext()); }
 <YYINITIAL> "||"                  { return symbol(sym.DISJUNTION, yyline, yycolumn, yytext()); }
 <YYINITIAL> ":"                  { return symbol(sym.SEP, yyline, yycolumn, yytext()); }
-<YYINITIAL> charc                { return symbol(sym.CHARC, yyline, yycolumn, yytext()); }
 <YYINITIAL> "glob"               { return symbol(sym.GLOB, yyline, yycolumn, yytext()); }
 <YYINITIAL> "loc"                { return symbol(sym.LOC, yyline, yycolumn, yytext()); }
 <YYINITIAL> "return"             { return symbol(sym.RETURN, yyline, yycolumn, yytext()); }
@@ -117,6 +112,7 @@ charc = [a-zA-Z]
   /* literals */
   
   \"                             { string.setLength(0); yybegin(STRING); }
+  \'                             { string.setLength(0); yybegin(STRING_SINGLE); }
 
   /* operators */
   "="                            { return symbol(sym.EQ, yyline, yycolumn, yytext()); }
@@ -149,6 +145,18 @@ charc = [a-zA-Z]
 
   \\r                            { string.append('\r'); }
   \\\"                           { string.append('\"'); }
+  \\                             { string.append('\\'); }
+}
+
+<STRING_SINGLE> {
+  \'                             { yybegin(YYINITIAL); 
+                                   return symbol(sym.STRING_SINGLE, 
+                                   string.toString()); }
+  [^\n\r\'\\]+                   { string.append( yytext() ); }
+  \\t                            { string.append('\t'); }
+  \\n                            { string.append('\n'); }
+  \\r                            { string.append('\r'); }
+  \\\'                           { string.append('\''); }
   \\                             { string.append('\\'); }
 }
 

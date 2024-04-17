@@ -40,6 +40,7 @@ variableLoc: bl1:bool
 
 Tabla de simbolo : func2 : valores: tipo:func:bool
 parametro : x22:char
+variableLoc: condition:bool
 
 Tabla de simbolo : func3 : valores: tipo:func:String
 variableLoc: b1:String

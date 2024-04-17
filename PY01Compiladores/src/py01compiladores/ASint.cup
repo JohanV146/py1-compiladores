@@ -76,32 +76,25 @@ scan with {:return lex.next_token();:};
 
 
 /* Terminals (tokens returned by the scanner). */
-terminal            SEMI, PLUS, PLUSP, MINUS, MINUSM, DIV, POT, MOD, TIMES, UMINUS, LPAREN, RPAREN, INTEGER_LITERAL;
-terminal Integer    NUMBER;        // our scanner provides numbers as integers
-terminal            IDENTIFIER, STRING_LITERAL, EQEQ, BREAK, BOOLEAN, ABSTRACT, EQ, DOT;
+terminal            PLUS, PLUSP, MINUS, MINUSM, DIV, POT, MOD, TIMES, INTEGER_LITERAL;
+terminal            IDENTIFIER, STRING_LITERAL, STRING_SINGLE, EQEQ, BREAK, EQ;
 terminal            GREATERT, LOWERT, GREATERE, LOWERE, NOT, NOTEQUALS, CONJUNTION, DISJUNTION, SEP;
-terminal            FLOTANTE, ENTERO, INT, FLOAT, CHAR, CHARC, STRING, ARRAY;
+terminal            FLOTANTE, INT, FLOAT, CHAR, STRINGC;
 terminal            TRUE,FALSE;
 terminal            IF, ELSE, WHILE, FOR, IN, RANGE, SWITCH, CASE;
 terminal            GLOB, LOC, RETURN, PRINTF, FUNC, MAIN, PARAM, READ, DEFAULT;
 terminal            PARENTA, PARENTC, PARENTCA, PARENTCC, UNDERS;
 terminal            ENDLINE, BOOOLEANF, COMA;
-terminal            SEMICOLON, PM;
 
 /* Non-terminals */
-non terminal expr_list;
-non terminal Integer expr; // used to store evaluated subexpressions
 non terminal String PROGRAMA, BODY, STATEMENT, EXP, ASIG, FUNCTION_STATEMENT, EXP_ARIT, VALUE, NUMBERS, EXP_REL, BOOL, LINE, FOR_STATEMENT, WHILE_STATEMENT, IF_STATEMENT, ELSE_STATEMENT, LINER, TERM, FACTOR, OPER_REL, EXP_REL_LOG;
-non terminal String EXP_LOG, OPER_LOG, OPERA_LOG, DECL, DECLOC, TYPES, INV_FUNC, PARAMS, PARAMETER, INV_ARRAY, DECLARRAY_WITH_VALUES, VALUE_LIST, SWITCH_STATEMENT, CASE_LIST, PARAMDECL, EXP_ARIT_INTEGER, TERM_INTEGER, FACTOR_INTEGER;
+non terminal String EXP_LOG, OPER_LOG, OPERA_LOG, DECL, DECLOC, TYPES, INV_FUNC, PARAMS, PARAMETER, INV_ARRAY, VALUE_LIST, SWITCH_STATEMENT, CASE_LIST, PARAMDECL, EXP_ARIT_INTEGER, TERM_INTEGER, FACTOR_INTEGER;
 non terminal String PRINTLN, RETURN_STATEMENT, FUNC_STAT_DEF, BREAK_STATEMENT, INPUT_STATEMENT;
 
 /* Precedences */
-
-precedence left PM, PLUS, MINUS;
+precedence left PLUS, MINUS;
 precedence left TIMES;
 precedence left DIV;
-precedence left UMINUS;
-
 
 /* The grammar rules */
 start with PROGRAMA;
@@ -132,7 +125,6 @@ LINER::=
       | WHILE_STATEMENT
       | SWITCH_STATEMENT
       | IF_STATEMENT
-      | DECLARRAY_WITH_VALUES
       | EXP
       | PARAMDECL
       | PRINTLN
@@ -164,6 +156,7 @@ FACTOR  ::=  PARENTA EXP_ARIT PARENTC
             | MINUS NUMBERS
             | NUMBERS
             | STRING_LITERAL
+            | STRING_SINGLE
             | IDENTIFIER
             | IDENTIFIER MINUSM
             | IDENTIFIER PLUSP
@@ -200,6 +193,7 @@ EXP_REL_LOG ::= EXP_REL | EXP_LOG;
 EXP_REL    ::= EXP_ARIT    OPER_REL    EXP_ARIT 
             | PARENTA EXP_REL PARENTC
             | NOT PARENTA EXP_REL PARENTC
+            | MINUS PARENTA EXP_REL_LOG PARENTC
             | BOOL;
 
 //Operador logico.
@@ -227,15 +221,23 @@ DECL::= GLOB SEP TYPES:tglob SEP IDENTIFIER:ID ENDLINE {: TablaSimbolos.get(glob
 
 DECL::= GLOB SEP TYPES:tglob SEP IDENTIFIER:ID EQ VALUE ENDLINE {: TablaSimbolos.get(globalHash).add("variableGLob: " + ID.toString() + ":" + tglob.toString()); :};
 
+DECL ::= GLOB SEP TYPES:tglob SEP IDENTIFIER:ID PARENTCA INTEGER_LITERAL PARENTCC ENDLINE {: TablaSimbolos.get(currentHash).add("array: " + ID.toString() + ":" + tglob.toString()); :};
+
+DECL ::= GLOB SEP TYPES:tglob SEP IDENTIFIER:ID PARENTCA INTEGER_LITERAL PARENTCC EQ VALUE_LIST ENDLINE  {: TablaSimbolos.get(currentHash).add("array : "+ ID.toString() + ":" + tglob.toString()); :};
+
 DECLOC::= LOC SEP TYPES:tloc SEP IDENTIFIER:ID ENDLINE {: TablaSimbolos.get(currentHash).add("variableLoc: " + ID.toString() + ":" + tloc.toString()); :};
 
 DECLOC::= LOC SEP TYPES:tloc SEP IDENTIFIER:ID EQ VALUE ENDLINE {: TablaSimbolos.get(currentHash).add("variableLoc: " + ID.toString() + ":" + tloc.toString()); :};
 
-TYPES::=    CHAR {: RESULT = "char"; :} 
-            | FLOAT {: RESULT = "float"; :}
-            | STRING {: RESULT = "String"; :}
-            | INT {: RESULT = "int"; :}
-            | BOOOLEANF {: RESULT = "bool"; :};
+DECLOC ::= LOC SEP TYPES:tloc SEP IDENTIFIER:ID PARENTCA INTEGER_LITERAL PARENTCC ENDLINE {: TablaSimbolos.get(currentHash).add("array: " + ID.toString() + ":" + tloc.toString()); :};
+
+DECLOC ::= LOC SEP TYPES:tloc SEP IDENTIFIER:ID PARENTCA INTEGER_LITERAL PARENTCC EQ VALUE_LIST ENDLINE  {: TablaSimbolos.get(currentHash).add("array : "+ ID.toString() + ":" + tloc.toString()); :};
+
+TYPES::= CHAR {: RESULT = "char"; :} 
+        | FLOAT {: RESULT = "float"; :}
+        | STRINGC {: RESULT = "String"; :}
+        | INT {: RESULT = "int"; :}
+        | BOOOLEANF {: RESULT = "bool"; :};
 
 //posibles valores que puede tener una asignacion.
 VALUE::= EXP_REL_LOG;
@@ -285,7 +287,7 @@ FUNCTION_STATEMENT::= FUNC SEP CHAR SEP IDENTIFIER:ID  {: String tipo;
                                                          TablaSimbolos.put(currentHash, fun);
                                                     :};
 
-FUNCTION_STATEMENT::= FUNC SEP STRING SEP IDENTIFIER:ID  {: String tipo;
+FUNCTION_STATEMENT::= FUNC SEP STRINGC SEP IDENTIFIER:ID  {: String tipo;
                                                          tipo = "tipo:func:String";
                                                          ArrayList<String> fun = new ArrayList<String>();
                                                          currentHash = ID.toString();
@@ -309,13 +311,12 @@ PARAMDECL ::= PARAM SEP TYPES:tparam SEP IDENTIFIER:ID ENDLINE {: TablaSimbolos.
 
 //Invocaciones de un array
 INV_ARRAY ::= IDENTIFIER PARENTCA INTEGER_LITERAL PARENTCC;
-DECLARRAY_WITH_VALUES ::= CHAR SEP IDENTIFIER:ID PARENTCA INTEGER_LITERAL PARENTCC EQ VALUE_LIST ENDLINE  {: TablaSimbolos.get(currentHash).add("array : "+ ID.toString() + ":" + "char"); :};
-DECLARRAY_WITH_VALUES ::= INT SEP IDENTIFIER:ID PARENTCA INTEGER_LITERAL PARENTCC EQ VALUE_LIST ENDLINE  {: TablaSimbolos.get(currentHash).add("array : "+ ID.toString() + ":" + "int"); :};
 VALUE_LIST ::= VALUE COMA VALUE_LIST | VALUE;
 
 
 PRINTLN ::= PRINTF PARENTA PARENTC ENDLINE;
 PRINTLN ::= PRINTF PARENTA STRING_LITERAL PARENTC ENDLINE;
+PRINTLN ::= PRINTF PARENTA STRING_SINGLE PARENTC ENDLINE;
 PRINTLN ::= PRINTF PARENTA IDENTIFIER PARENTC ENDLINE;
 
 INPUT_STATEMENT ::= READ PARENTA IDENTIFIER PARENTC ENDLINE; 
@@ -338,7 +339,7 @@ FOR_STATEMENT ::= FOR SEP IDENTIFIER SEP IN SEP RANGE PARENTA EXP_ARIT_INTEGER C
 
 SWITCH_STATEMENT ::= SWITCH PARENTA IDENTIFIER PARENTC UNDERS CASE_LIST UNDERS;
 
-CASE_LIST ::= CASE EXP_ARIT SEP LINE CASE_LIST | DEFAULT SEP LINE;
+CASE_LIST ::= CASE EXP_ARIT SEP LINE CASE_LIST | CASE EXP_ARIT SEP LINE | DEFAULT SEP LINE | DEFAULT SEP;
 
 
 
